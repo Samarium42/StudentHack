@@ -38,7 +38,7 @@ class SolarSystem():
         sunattr = PlanetAttributes()
         sunattr.mass = 10
         sunattr.radius = 1.2
-        sunattr.position=Vec3( 0,0,0)
+        sunattr.position=Vec3(0,0,0)
 
         sun = Planet(render, sunattr)
         self.planets.append(sun)
@@ -58,8 +58,7 @@ class SolarSystem():
         self.planets.append(planet)
 
     def update(self):
-        # todo add physics here
-        print("test task")
+        print("a")
 
 class World(DirectObject):
     def genLabelText(self, text, i):
@@ -67,10 +66,9 @@ class World(DirectObject):
                             parent=base.a2dTopLeft,align=TextNode.ALeft, scale=.05)
 
     def __init__(self):
-
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
-        #base.disableMouse()
+        base.disableMouse()
         camera.setPos(0, 0, 45)
         camera.setHpr(0, -90, 0)
 
@@ -95,9 +93,8 @@ class World(DirectObject):
                           self.orbit_period_moon)
 
     def update(self, task):
-
-        print(camera.getPos())
         self.solar_system.update()
+        return task.again
 
 #########################################################################
 # Except for the one commented line below, this is all as it was before #
