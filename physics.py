@@ -30,23 +30,23 @@ def updatePosition (Objects, Index, Time=1):
     # Objects is a list of objects. Each object has properties: mass, radius, position, velocity
     # Position and Velocity are now 3D vectors: [x,y,z]
     PrimaryObject = Objects[Index]
-    Position = PrimaryObject.position
-    Velocity = PrimaryObject.velocity
+    Position = PrimaryObject.attributes.position
+    Velocity = PrimaryObject.attributes.velocity
     SumofForces = [0,0,0] 
 
     for object in Objects:
         if object == Objects[Index]:
             continue
-        Force = calcGravitationalForce(PrimaryObject.mass, object.mass, PrimaryObject.radius, object.radius, PrimaryObject.position, object.position)
+        Force = calcGravitationalForce(PrimaryObject.attributes.mass, object.attributes.mass, PrimaryObject.attributes.radius, object.attributes.radius, PrimaryObject.attributes.position, object.attributes.position)
         SumofForces = [SumofForces[i] + Force[i] for i in range(3)]  # Update each component of the force
 
     # Update the velocity and position of the primary object
-    Acceleration = [force / PrimaryObject.mass for force in SumofForces]  # F = ma, so a = F/m
+    Acceleration = [force / PrimaryObject.attributes.mass for force in SumofForces]  # F = ma, so a = F/m
     NewVelocity = [Velocity[i] + Acceleration[i] * Time for i in range(3)]  # v = u + at
     NewPosition = [Position[i] + NewVelocity[i] * Time for i in range(3)]  # s = ut + 1/2at^2
 
-    PrimaryObject.velocity = NewVelocity
-    PrimaryObject.position = NewPosition
+    PrimaryObject.attributes.velocity = NewVelocity
+    PrimaryObject.attributes.position = NewPosition
 
     Objects[Index] = PrimaryObject
 
@@ -56,15 +56,15 @@ def modelCollisions (Objects, Index1, Index2):
     #Velocity is an array: [x,y]
     Object1 = Objects[Index1]
     Object2 = Objects[Index2]
-    Velocity1 = Object1.velocity
-    Velocity2 = Object2.velocity
+    Velocity1 = Object1.attributes.velocity
+    Velocity2 = Object2.attributes.velocity
 
     #Calculating the new velocities of the objects after the collision
-    NewVelocity1 = (Object1.mass - Object2.mass) / (Object1.mass + Object2.mass) * Velocity1 + (2 * Object2.mass) / (Object1.mass + Object2.mass) * Velocity2  #v1' = (m1-m2)/(m1+m2)*v1 + (2*m2)/(m1+m2)*v2
-    NewVelocity2 = (Object2.mass - Object1.mass) / (Object1.mass + Object2.mass) * Velocity2 + (2 * Object1.mass) / (Object1.mass + Object2.mass) * Velocity1  #v2' = (m2-m1)/(m1+m2)*v2 + (2*m1)/(m1+m2)*v1
+    NewVelocity1 = (Object1.attributes.mass - Object2.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity1 + (2 * Object2.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity2  #v1' = (m1-m2)/(m1+m2)*v1 + (2*m2)/(m1+m2)*v2
+    NewVelocity2 = (Object2.attributes.mass - Object1.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity2 + (2 * Object1.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity1  #v2' = (m2-m1)/(m1+m2)*v2 + (2*m1)/(m1+m2)*v1
 
-    Object1.velocity = NewVelocity1
-    Object2.velocity = NewVelocity2
+    Object1.attributes.velocity = NewVelocity1
+    Object2.attributes.velocity = NewVelocity2
 
     Objects[Index1] = Object1
     Objects[Index2] = Object2
@@ -77,12 +77,12 @@ def updateAllObjects (Objects, Width=500, Height=500, Time=1):
         """
         ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
         """
-        if (Objects[i].position[0] < 0 or Objects[i].position[1] < 0 or Objects[i].position[2] < 0):
+        if (Objects[i].attributes.position[0] < 0 or Objects[i].attributes.position[1] < 0 or Objects[i].attributes.position[2] < 0):
             Objects.pop(i)
             i -= 1
         
         """CHECK FOR COLLISIONS"""
         for j in range(i+1, len(Objects)):
-            if (math.sqrt((Objects[i].position[0] - Objects[j].position[0])**2 + (Objects[i].position[1] - Objects[j].position[1])**2 + (Objects[i].position[2] - Objects[j].position[2])**2) < Objects[i].radius + Objects[j].radius):
+            if (math.sqrt((Objects[i].attributes.position[0] - Objects[j].attributes.position[0])**2 + (Objects[i].attributes.position[1] - Objects[j].attributes.position[1])**2 + (Objects[i].attributes.position[2] - Objects[j].attributes.position[2])**2) < Objects[i].attributes.radius + Objects[j].attributes.radius):
                 modelCollisions(Objects, i, j)
     return Objects
