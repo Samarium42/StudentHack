@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from planet import Planet, PlanetAttributes
+from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
 
 from direct.showbase.ShowBase import ShowBase
@@ -16,6 +16,8 @@ import sys
 from physics import updateAllObjects
 import random
 
+NO_PLANETS = 50
+
 class SolarSystem():
     def __init__(self):
         self.ready = False
@@ -28,7 +30,7 @@ class SolarSystem():
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
-        sun = Planet(render, sunattr)
+        sun = Planet3D(render, sunattr)
         self.planets.append(sun)
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
@@ -41,24 +43,21 @@ class SolarSystem():
                 random.randint(-10, 10)
                 ]
             attr.velocity = [
-                random.randint(-10, 10)*10E-45,
-                random.randint(-10, 10)*10E-45,
-                random.randint(-10, 10)*10E-45
+                random.randint(-10, 10)*10E-10,
+                random.randint(-10, 10)*10E-10,
+                random.randint(-10, 10)*10E-10
                 ]
 
-            planet = Planet(render, attr)
+            planet = Planet3D(render, attr)
             self.planets.append(planet)
 
         print(len(self.planets))
         self.ready = True
 
     def update(self):
-        lx = self.planets[1].attributes.position[0]
-        updateAllObjects(self.planets, time=50)
+        updateAllObjects(self.planets, time=250)
         for planet in self.planets:
             planet.update()
-        x = self.planets[1].attributes.position[0]
-        print (f"{lx} >> {x}")
 
 
 class World(DirectObject):
@@ -69,12 +68,12 @@ class World(DirectObject):
     def __init__(self, task_manager):
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
-        base.disableMouse()
+        #base.disableMouse()
         camera.setPos(0, 0, 45)
         camera.setHpr(0, -90, 0)
 
         self.solar_system = SolarSystem()
-        self.solar_system.loadPlanets(3)  # Load, texture, and position the planets
+        self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
 
         self.title = OnscreenText(
             text="Panda3D: Tutorial 3 - Events",

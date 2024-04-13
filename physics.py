@@ -50,8 +50,42 @@ def updatePosition (Objects, Index, Time=1):
 
     Objects[Index] = PrimaryObject
 
+def modelCollisions(Objects, Index1, Index2):
+    o1 = Objects[Index1]
+    o2 = Objects[Index2]
 
-def modelCollisions (Objects, Index1, Index2):
+    r1 = o1.attributes.radius
+    r2 = o2.attributes.radius
+
+    vol1 = (4/3) * math.pi * (r1 ** 3)
+    vol2 = (4/3) * math.pi * (r2 ** 3)
+
+    total_mass = o1.attributes.mass + o2.attributes.mass
+    total_volume = vol1 + vol2
+    final_radius = ((total_volume) / (math.pi * 4/3)) ** (1/3)
+
+    print(f"{r1} + {r2} = {final_radius}")
+
+    o1.attributes.mass = total_mass
+    o1.attributes.radius = final_radius
+
+    o1.attributes.velocity = [
+     o1.attributes.velocity[i] + o2.attributes.velocity[i]
+     for i in range(3)
+     ]
+
+    o1.attributes.position = [
+     (o1.attributes.position[i] + o2.attributes.position[i]) / 2
+     for i in range(3)
+     ]
+
+    o2.delete()
+    Objects.pop(Index2)
+    
+    return Objects
+
+
+def modelCollisionsBouncing(Objects, Index1, Index2):
     #Objects is a 3d array. Each row contains descriptors for each object: [mass, radius, position, velocity]
     #Velocity is an array: [x,y]
     o1 = Objects[Index1]
@@ -80,20 +114,25 @@ def modelCollisions (Objects, Index1, Index2):
 
     return Objects
 
-def updateAllObjects (Objects, Width=500, Height=500, time=1):
-    for i, obj in enumerate(Objects):
+def updateAllObjects (Objects, size=500, time=1):
+    for i in range(len(Objects) - 1, -1, -1):
         if i == 0:
             continue
+
         updatePosition(Objects, i, time)
         """
         ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
         """
-        #if (Objects[i].attributes.position[0] < 0 or Objects[i].attributes.position[1] < 0 or Objects[i].attributes.position[2] < 0):
-            #Objects.pop(i)
-            #i -= 1
+        if (
+                Objects[i].attributes.position[0] < -size or Objects[i].attributes.position[0] > size or
+           Objects[i].attributes.position[1] < -size or Objects[i].attributes.position[1] > size or
+           Objects[i].attributes.position[2] < -size or Objects[i].attributes.position[2] > size
+           ):
+            Objects.pop(i)
+            continue
         
         """CHECK FOR COLLISIONS"""
-        for j in range(i+1, len(Objects)):
+        for j in range(len(Objects) -1, i, -1):
             if (math.sqrt((Objects[i].attributes.position[0] - Objects[j].attributes.position[0])**2 + (Objects[i].attributes.position[1] - Objects[j].attributes.position[1])**2 + (Objects[i].attributes.position[2] - Objects[j].attributes.position[2])**2) < Objects[i].attributes.radius + Objects[j].attributes.radius):
                 modelCollisions(Objects, i, j)
     return Objects
