@@ -4,10 +4,10 @@ import numpy as np
 
 @dataclass
 class PlanetAttributes:
-    mass = 2
-    radius = 5.0
-    position = [0, 0, 0]
-    velocity = [0, 0, 0]
+    mass: int
+    radius: float
+    position: list
+    velocity: list
 
 class Planet():
     def __init__(self, world, attributes: PlanetAttributes):
