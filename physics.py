@@ -26,7 +26,7 @@ def calcVelocity (Acceleration,Time):
 """
 Takes in a list of objects and updates the position of the object at the given index
 """
-def updatePosition (Objects, Index, Time):
+def updatePosition (Objects, Index, Time=1):
     # Objects is a list of objects. Each object has properties: mass, radius, position, velocity
     # Position and Velocity are now 3D vectors: [x,y,z]
     PrimaryObject = Objects[Index]
@@ -69,4 +69,20 @@ def modelCollisions (Objects, Index1, Index2):
     Objects[Index1] = Object1
     Objects[Index2] = Object2
 
+    return Objects
+
+def updateAllObjects (Objects, Time=1):
+    for i in range(len(Objects)):
+        updatePosition(Objects, i, Time)
+        """
+        ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
+        """
+        if (Objects[i].position[0] < 0 or Objects[i].position[1] < 0 or Objects[i].position[2] < 0):
+            Objects.pop(i)
+            i -= 1
+        
+        """CHECK FOR COLLISIONS"""
+        for j in range(i+1, len(Objects)):
+            if (math.sqrt((Objects[i].position[0] - Objects[j].position[0])**2 + (Objects[i].position[1] - Objects[j].position[1])**2 + (Objects[i].position[2] - Objects[j].position[2])**2) < Objects[i].radius + Objects[j].radius):
+                modelCollisions(Objects, i, j)
     return Objects
