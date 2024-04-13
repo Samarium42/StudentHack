@@ -5,7 +5,6 @@ import sounddevice as sd
 import musicmodel
 
 from direct.showbase.ShowBase import ShowBase
-from graphics import Graphics
 base = ShowBase()
 
 from panda3d.core import NodePath, PandaNode, TextNode, Vec3
@@ -18,7 +17,8 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 50
+NO_PLANETS = 4
+SPEED = 45
 
 class SolarSystem():
     def __init__(self):
@@ -26,38 +26,37 @@ class SolarSystem():
 
     def loadPlanets(self, num_planets: int):
         self.planets = []
+        self.deleted_trails = []
 
         sunattr = PlanetAttributes()
         sunattr.mass = 10
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
-        sun = Planet3D(render, sunattr)
+        sun = Planet3D(render, sunattr, "Sun")
         self.planets.append(sun)
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
             attr.mass = random.randint(1, 20) * 10
             attr.radius = random.randint(1, 5)*0.1
-            print(type(attr.radius))
             attr.position = [
                 random.randint(-10, 10),
                 random.randint(-10, 10),
                 random.randint(-10, 10)
                 ]
             attr.velocity = [
-                random.randint(-10, 10)*10E-10,
-                random.randint(-10, 10)*10E-10,
-                random.randint(-10, 10)*10E-10
+                random.randint(-10, 10)*10E-7,
+                random.randint(-10, 10)*10E-7,
+                random.randint(-10, 10)*10E-7
                 ]
 
-            planet = Planet3D(render, attr)
+            planet = Planet3D(render, attr, f"Planet{x}")
             self.planets.append(planet)
 
-        print(len(self.planets))
         self.ready = True
 
     def update(self):
-        updateAllObjects(self.planets, time=250)
+        updateAllObjects(self.planets, time=SPEED)
         for planet in self.planets:
             planet.update()
 
@@ -91,7 +90,6 @@ class World(DirectObject):
         self.accept("mouse1", self.handleMouseClick)
 
         task_manager.add(self.update, "updateSolarSystem", taskChain="taskChain")
-        print(len(self.solar_system.planets))
 
     def handleMouseClick(self):
         pass
@@ -118,7 +116,7 @@ if __name__ == "__main__":
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
     w = World(task_manager)
-    g = Graphics(base)
+    g = Graphics(base) 
 
 
     base.run()

@@ -1,12 +1,15 @@
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectSlider import DirectSlider
 from direct.gui.DirectLabel import DirectLabel
+from panda3d.core import NodePath
+from planet import Planet,PlanetAttributes
 
 class Graphics:
     def __init__(self, base):
-        self.aspect2d = base.aspect2d  # Get the aspect2d node from the base
+        self.aspect2d = base.aspect2d
         self.aspect2d.setDepthTest(False)
-                
+        
+        self.planet = Planet(PlanetAttributes)  # Assuming default attributes are set in Planet class
         
         self.button = DirectButton(text="Menu", command=self.show_slider_and_label)
         self.button.setScale(0.1)
@@ -23,6 +26,7 @@ class Graphics:
         self.label.setTransparency(1)
         self.label.hide()
 
+
     def show_slider_and_label(self):
         if self.slider.isHidden():
             self.slider.show()
@@ -35,3 +39,4 @@ class Graphics:
     def slider_callback(self):
         slider_value = round(self.slider['value'])
         self.label['text'] = f"Number of planets: {slider_value}"
+
