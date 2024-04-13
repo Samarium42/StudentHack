@@ -1,35 +1,31 @@
 import numpy as np
 import tensorflow as tf
 import pandas as pd
-import physics.py as phys
+import physics as phys
 
-NUMBEROFPLANETS = ...
-
-def rewardFunc (objectsOriginal):
+def rewardFunc (NUMBEROFPLANETS, objects):
     # Objects is a list of objects. Each object has properties: mass, radius, position, velocity
     # Position and Velocity are 3D vectors: [x,y,z]
-    NUMBEROFPLANETS = len(objectsOriginal)
-    objects = objectsOriginal
     w1,w2 = 1,1
     reward = 0
-    for i in range(300):
-        objects = phys.updateAllObjects(objects)
-
-    reward += w1 * RNumPlanets(objects)  #[0,1]
+    reward += w1 * RNumPlanets(NUMBEROFPLANETS, objects)  #[0,1]
     reward += w2 * RConserved(objects)  # Reward for conserving energy
 
     # NORMALISE REWARD HERE
     reward = reward #HEREEEEEEEEEE
-
     return reward
 
-def RNumPlanets(objects):
+def RNumPlanets(NUMBEROFPLANETS, objects):
     return (NUMBEROFPLANETS-len(objects))/NUMBEROFPLANETS
 
 def RConserved(objects):
+    sum = 0
     for object in objects:
         for object2 in objects:
             if object == object2:
                 continue
-            if not phys.calcGravitationalForce(object.mass, object2.mass, object.radius, object2.radius, object.position, object2.position) == 0:
-                return 0
+            sum += abs((phys.GRAVITATIONAL_CONSTANT * object2.mass)/np.linalg.norm(object2.position - object.position) - (object2.velocity)**2)
+
+    return sum
+
+rewardFunc()

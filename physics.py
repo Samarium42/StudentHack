@@ -71,7 +71,7 @@ def modelCollisions (Objects, Index1, Index2):
 
     return Objects
 
-def updateAllObjects (Objects, Time=1):
+def updateAllObjects (Objects, Width=500, Height=500, Time=1):
     for i in range(len(Objects)):
         updatePosition(Objects, i, Time)
         """
