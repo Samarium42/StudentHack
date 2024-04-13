@@ -69,3 +69,13 @@ def modelCollisions (Objects, Index1, Index2):
     Objects[Index2] = Object2
 
     return Objects
+
+def kineticEnergy (Objects):
+    #Objects is a 3d array. Each row contains descriptors for each object: [mass, radius, position, velocity]
+    #Velocity is an array: [x,y]
+    TotalKineticEnergy = 0
+    for object in Objects:
+        Velocity = object[3]
+        KineticEnergy = 0.5 * object.mass * (Velocity[0]**2 + Velocity[1]**2)  # KE = 0.5*m*v^2
+        TotalKineticEnergy += KineticEnergy
+    return TotalKineticEnergy
