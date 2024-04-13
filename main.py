@@ -12,6 +12,7 @@
 # the scene graph is all about.
 
 from direct.showbase.ShowBase import ShowBase
+from graphics import Graphics
 base = ShowBase()
 
 from direct.gui.DirectGui import *
@@ -169,6 +170,9 @@ class World(object):
         self.day_period_mars.loop()
     # end RotatePlanets()
 # end class world
+if __name__ == "__main__":
+    graphics = Graphics()
+    graphics.run()
 
 w = World()
 base.run()
