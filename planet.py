@@ -1,17 +1,21 @@
 from dataclasses import dataclass
 from panda3d.core import Vec3
-import numpy as np
 
 @dataclass
 class PlanetAttributes:
-    mass: int
-    radius: float
-    position: list
-    velocity: list
+    mass = 2
+    radius = 5.0
+    position = [0, 0, 0]
+    velocity = [0, 0, 0]
 
 class Planet():
-    def __init__(self, world, attributes: PlanetAttributes):
+    def __init__(self, attributes: PlanetAttributes):
         self.attributes = attributes
+
+
+class Planet3D(Planet):
+    def __init__(self, world, attributes: PlanetAttributes):
+        Planet.__init__(self, attributes)
 
         self.model = loader.loadModel("models/planet_sphere")
         self.texture = loader.loadTexture("models/sun_1k_tex.jpg")
@@ -33,4 +37,7 @@ class Planet():
                 self.attributes.position[1],
                 self.attributes.position[2]
                 )
+        self.model.setScale(self.attributes.radius)
 
+    def delete(self):
+        self.model.removeNode()

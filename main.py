@@ -1,16 +1,8 @@
 #!/usr/bin/env python
-
-# Author: Shao Zhang and Phil Saltzman
-# Last Updated: 2015-03-13
-#
-# This tutorial will cover events and how they can be used in Panda
-# Specifically, this lesson will use events to capture keyboard presses and
-# mouse clicks to trigger actions in the world. It will also use events
-# to count the number of orbits the Earth makes around the sun. This
-# tutorial uses the same base code from the solar system tutorial.
-
-from planet import Planet, PlanetAttributes
+from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
+import sounddevice as sd
+import musicmodel
 
 from direct.showbase.ShowBase import ShowBase
 from graphics import Graphics
@@ -25,14 +17,13 @@ from direct.task.Task import TaskManager
 import sys
 from physics import updateAllObjects
 import random
-import numpy as np
 
-# We start this tutorial with the standard class. However, the class is a
-# subclass of an object called DirectObject. This gives the class the ability
-# to listen for and respond to events. From now on the main class in every
-# tutorial will be a subclass of DirectObject
+NO_PLANETS = 50
 
 class SolarSystem():
+    def __init__(self):
+        self.ready = False
+
     def loadPlanets(self, num_planets: int):
         self.planets = []
 
@@ -41,25 +32,34 @@ class SolarSystem():
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
-        sun = Planet(render, sunattr)
+        sun = Planet3D(render, sunattr)
         self.planets.append(sun)
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
-            attr.mass = random.randint(1, 20)
+            attr.mass = random.randint(1, 20) * 10
             attr.radius = random.randint(1, 5)*0.1
             print(type(attr.radius))
-            attr.position = np.array(
+            attr.position = [
                 random.randint(-10, 10),
                 random.randint(-10, 10),
                 random.randint(-10, 10)
-                )
+                ]
+            attr.velocity = [
+                random.randint(-10, 10)*10E-10,
+                random.randint(-10, 10)*10E-10,
+                random.randint(-10, 10)*10E-10
+                ]
 
-            planet = Planet(render, attr)
+            planet = Planet3D(render, attr)
+            self.planets.append(planet)
 
-        self.planets.append(planet)
+        print(len(self.planets))
+        self.ready = True
 
     def update(self):
-        updateAllObjects(self.planets)
+        updateAllObjects(self.planets, time=250)
+        for planet in self.planets:
+            planet.update()
 
 
 class World(DirectObject):
@@ -67,15 +67,20 @@ class World(DirectObject):
         return OnscreenText(text=text, pos=(0.06, -.06 * (i + 0.5)), fg=(1, 1, 1, 1),
                             parent=base.a2dTopLeft,align=TextNode.ALeft, scale=.05)
 
-    def __init__(self):
+    def __init__(self, task_manager):
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
-        base.disableMouse()
+        #base.disableMouse()
         camera.setPos(0, 0, 45)
         camera.setHpr(0, -90, 0)
 
         self.solar_system = SolarSystem()
-        self.solar_system.loadPlanets(3)  # Load, texture, and position the planets
+        self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
+
+        melody = musicmodel.GenerateAudio(random.randint(0,100))
+        sampling_rate = 44100
+        sd.play(melody, sampling_rate)
+        sd.wait()
 
         self.title = OnscreenText(
             text="Panda3D: Tutorial 3 - Events",
@@ -84,6 +89,9 @@ class World(DirectObject):
 
         self.accept("escape", sys.exit)
         self.accept("mouse1", self.handleMouseClick)
+
+        task_manager.add(self.update, "updateSolarSystem", taskChain="taskChain")
+        print(len(self.solar_system.planets))
 
     def handleMouseClick(self):
         pass
@@ -96,7 +104,7 @@ class World(DirectObject):
 
     def update(self, task):
         self.solar_system.update()
-        return task.again
+        return task.cont
 
 #########################################################################
 # Except for the one commented line below, this is all as it was before #
@@ -105,13 +113,12 @@ class World(DirectObject):
 
 
 if __name__ == "__main__":
-    w = World()
-    g = Graphics(base)
-
     task_manager = TaskManager()
     task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
-    task_manager.add(w.update, "updateSolarSystem", taskChain="taskChain")
+    w = World(task_manager)
+    g = Graphics(base)
+
 
     base.run()
