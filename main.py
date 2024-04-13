@@ -34,17 +34,24 @@ import random
 class SolarSystem():
     def loadPlanets(self, num_planets: int):
         self.planets = []
-        for x in range(num_planets):
+
+        sunattr = PlanetAttributes()
+        sunattr.mass = 10
+        sunattr.radius = 1.2
+        sunattr.position=Vec3( 0,0,0)
+
+        sun = Planet(render, sunattr)
+        self.planets.append(sun)
+        for x in range(num_planets - 1):
             attr = PlanetAttributes()
             attr.mass = random.randint(1, 20)
-            attr.radius = random.randint(1, 20)*10
+            attr.radius = random.randint(1, 5)*0.1
             print(type(attr.radius))
-            #attr.position=Vec3(
-            #    random.randint(-10, 10),
-            #    random.randint(-10, 10),
-            #    random.randint(-10, 10)
-            #    )
-            attr.position=Vec3(0,0,0)
+            attr.position=Vec3(
+                random.randint(-10, 10),
+                random.randint(-10, 10),
+                random.randint(-10, 10)
+                )
 
             planet = Planet(render, attr)
 
@@ -88,6 +95,8 @@ class World(DirectObject):
                           self.orbit_period_moon)
 
     def update(self, task):
+
+        print(camera.getPos())
         self.solar_system.update()
 
 #########################################################################
