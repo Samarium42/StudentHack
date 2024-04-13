@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from panda3d.core import Vec3
-import numpy as np
 
 @dataclass
 class PlanetAttributes:

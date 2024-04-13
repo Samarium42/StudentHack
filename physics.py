@@ -54,32 +54,43 @@ def updatePosition (Objects, Index, Time=1):
 def modelCollisions (Objects, Index1, Index2):
     #Objects is a 3d array. Each row contains descriptors for each object: [mass, radius, position, velocity]
     #Velocity is an array: [x,y]
-    Object1 = Objects[Index1]
-    Object2 = Objects[Index2]
-    Velocity1 = Object1.attributes.velocity
-    Velocity2 = Object2.attributes.velocity
+    o1 = Objects[Index1]
+    o2 = Objects[Index2]
+    v1 = o1.attributes.velocity
+    v2 = o2.attributes.velocity
 
+    m1 = o1.attributes.mass
+    m2 = o2.attributes.mass
     #Calculating the new velocities of the objects after the collision
-    NewVelocity1 = (Object1.attributes.mass - Object2.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity1 + (2 * Object2.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity2  #v1' = (m1-m2)/(m1+m2)*v1 + (2*m2)/(m1+m2)*v2
-    NewVelocity2 = (Object2.attributes.mass - Object1.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity2 + (2 * Object1.attributes.mass) / (Object1.attributes.mass + Object2.attributes.mass) * Velocity1  #v2' = (m2-m1)/(m1+m2)*v2 + (2*m1)/(m1+m2)*v1
+    nv1 = [
+            (m1 - m2) / (m1 + m2) * v1[i] + (2 * m2) / (m1 + m2) * v2[i]        #v1' = (m1-m2)/(m1+m2)*v1 + (2*m2)/(m1+m2)*v2
+            for i in range(3)
+            ]
 
-    Object1.attributes.velocity = NewVelocity1
-    Object2.attributes.velocity = NewVelocity2
+    nv2 = [
+            (m2 - m1) / (m1 + m2) * v2[i] + (2 * m1) / (m1 + m2) * v1[i]        #v2' = (m2-m1)/(m1+m2)*v2 + (2*m1)/(m1+m2)*v1
+            for i in range(3)
+            ]
 
-    Objects[Index1] = Object1
-    Objects[Index2] = Object2
+    o1.attributes.velocity = nv1
+    o2.attributes.velocity = nv2
+
+    #Objects[Index1] = Object1
+    #Objects[Index2] = Object2
 
     return Objects
 
-def updateAllObjects (Objects, Width=500, Height=500, Time=1):
-    for i in range(len(Objects)):
-        updatePosition(Objects, i, Time)
+def updateAllObjects (Objects, Width=500, Height=500, time=1):
+    for i, obj in enumerate(Objects):
+        if i == 0:
+            continue
+        updatePosition(Objects, i, time)
         """
         ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
         """
-        if (Objects[i].attributes.position[0] < 0 or Objects[i].attributes.position[1] < 0 or Objects[i].attributes.position[2] < 0):
-            Objects.pop(i)
-            i -= 1
+        #if (Objects[i].attributes.position[0] < 0 or Objects[i].attributes.position[1] < 0 or Objects[i].attributes.position[2] < 0):
+            #Objects.pop(i)
+            #i -= 1
         
         """CHECK FOR COLLISIONS"""
         for j in range(i+1, len(Objects)):
