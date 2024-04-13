@@ -171,6 +171,6 @@ class World(object):
     # end RotatePlanets()
 # end class world
 if __name__ == "__main__":
-    graphics = Graphics()
     w = World()
+    graphics = Graphics(base)
     base.run()
