@@ -3,7 +3,6 @@ from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
 
 from direct.showbase.ShowBase import ShowBase
-from graphics import Graphics
 base = ShowBase()
 
 from panda3d.core import NodePath, PandaNode, TextNode, Vec3
@@ -30,7 +29,7 @@ class SolarSystem():
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
-        sun = Planet3D(render, sunattr)
+        sun = Planet3D(render, sunattr, "Sun")
         self.planets.append(sun)
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
@@ -48,7 +47,7 @@ class SolarSystem():
                 random.randint(-10, 10)*10E-10
                 ]
 
-            planet = Planet3D(render, attr)
+            planet = Planet3D(render, attr, f"Planet{x}")
             self.planets.append(planet)
 
         print(len(self.planets))
@@ -111,7 +110,7 @@ if __name__ == "__main__":
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
     w = World(task_manager)
-    g = Graphics(base)
+    g = Graphics(base) 
 
 
     base.run()

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from panda3d.core import Vec3
+from direct.motiontrail.MotionTrail import MotionTrail
 
 @dataclass
 class PlanetAttributes:
@@ -14,7 +15,7 @@ class Planet():
 
 
 class Planet3D(Planet):
-    def __init__(self, world, attributes: PlanetAttributes):
+    def __init__(self, world, attributes: PlanetAttributes, name):
         Planet.__init__(self, attributes)
 
         self.model = loader.loadModel("models/planet_sphere")
@@ -30,6 +31,9 @@ class Planet3D(Planet):
                 self.attributes.position[1],
                 self.attributes.position[2]
                 )
+        self.motion_trail = MotionTrail(name, self.model)
+        self.motion_trail.register_motion_trail()
+    
 
     def update(self):
         self.model.setPos(
