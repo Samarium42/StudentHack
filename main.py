@@ -172,7 +172,5 @@ class World(object):
 # end class world
 if __name__ == "__main__":
     graphics = Graphics()
-    graphics.run()
-
-w = World()
-base.run()
+    w = World()
+    base.run()
