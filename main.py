@@ -23,8 +23,9 @@ from direct.showbase.DirectObject import DirectObject
 from direct.task import Task
 from direct.task.Task import TaskManager
 import sys
-
+from physics import updateAllObjects
 import random
+import numpy as np
 
 # We start this tutorial with the standard class. However, the class is a
 # subclass of an object called DirectObject. This gives the class the ability
@@ -47,7 +48,7 @@ class SolarSystem():
             attr.mass = random.randint(1, 20)
             attr.radius = random.randint(1, 5)*0.1
             print(type(attr.radius))
-            attr.position=Vec3(
+            attr.position = np.array(
                 random.randint(-10, 10),
                 random.randint(-10, 10),
                 random.randint(-10, 10)
@@ -58,7 +59,8 @@ class SolarSystem():
         self.planets.append(planet)
 
     def update(self):
-        print("a")
+        updateAllObjects(self.planets)
+
 
 class World(DirectObject):
     def genLabelText(self, text, i):

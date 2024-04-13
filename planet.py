@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from panda3d.core import Vec3
+import numpy as np
 
 @dataclass
 class PlanetAttributes:
-    mass = 2
-    radius = 5.0
-    position = Vec3(0,0,0)
-    velocity = Vec3(0,0,0)
-
+    mass: int
+    radius: float
+    position: list
+    velocity: list
 
 class Planet():
     def __init__(self, world, attributes: PlanetAttributes):
@@ -22,8 +22,15 @@ class Planet():
         self.model.setScale(self.attributes.radius)
 
         self.model.setPos(
-                self.attributes.position.x,
-                self.attributes.position.y,
-                self.attributes.position.z
+                self.attributes.position[0],
+                self.attributes.position[1],
+                self.attributes.position[2]
+                )
+
+    def update(self):
+        self.model.setPos(
+                self.attributes.position[0],
+                self.attributes.position[1],
+                self.attributes.position[2]
                 )
 
