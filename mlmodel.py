@@ -51,7 +51,6 @@ def simulate (planets: list, period: int) -> list:
         planets = phys.updateAllObjects(planets)
     return planets
 
-
 def populate(p: int, n: int):
     population = []
     for _ in range(p):
