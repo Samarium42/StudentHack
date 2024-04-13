@@ -15,7 +15,8 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 50
+NO_PLANETS = 4
+SPEED = 45
 
 class SolarSystem():
     def __init__(self):
@@ -23,6 +24,7 @@ class SolarSystem():
 
     def loadPlanets(self, num_planets: int):
         self.planets = []
+        self.deleted_trails = []
 
         sunattr = PlanetAttributes()
         sunattr.mass = 10
@@ -35,26 +37,24 @@ class SolarSystem():
             attr = PlanetAttributes()
             attr.mass = random.randint(1, 20) * 10
             attr.radius = random.randint(1, 5)*0.1
-            print(type(attr.radius))
             attr.position = [
                 random.randint(-10, 10),
                 random.randint(-10, 10),
                 random.randint(-10, 10)
                 ]
             attr.velocity = [
-                random.randint(-10, 10)*10E-10,
-                random.randint(-10, 10)*10E-10,
-                random.randint(-10, 10)*10E-10
+                random.randint(-10, 10)*10E-7,
+                random.randint(-10, 10)*10E-7,
+                random.randint(-10, 10)*10E-7
                 ]
 
             planet = Planet3D(render, attr, f"Planet{x}")
             self.planets.append(planet)
 
-        print(len(self.planets))
         self.ready = True
 
     def update(self):
-        updateAllObjects(self.planets, time=250)
+        updateAllObjects(self.planets, time=SPEED)
         for planet in self.planets:
             planet.update()
 
@@ -83,7 +83,6 @@ class World(DirectObject):
         self.accept("mouse1", self.handleMouseClick)
 
         task_manager.add(self.update, "updateSolarSystem", taskChain="taskChain")
-        print(len(self.solar_system.planets))
 
     def handleMouseClick(self):
         pass
