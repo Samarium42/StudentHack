@@ -3,6 +3,8 @@ import math
 # Gravitational Force
 # Acceleration
 # Velocity
+# Momentum/Direction After Collisions
+
 GRAVITATIONAL_CONSTANT = 6.674 * 10**-11
 
 def calcGravitationalForce (Object1mass,Object2mass,Radius1,Radius2, Location1, Location2):
@@ -45,4 +47,25 @@ def updatePosition (Objects, Index,Time):
     PrimaryObject[2] = Position
     PrimaryObject[3] = Velocity
     Objects[Index] = PrimaryObject
+    return Objects
+
+
+def modelCollisions (Objects, Index1, Index2):
+    #Objects is a 3d array. Each row contains descriptors for each object: [mass, radius, position, velocity]
+    #Velocity is an array: [x,y]
+    Object1 = Objects[Index1]
+    Object2 = Objects[Index2]
+    Velocity1 = Object1[3]
+    Velocity2 = Object2[3]
+
+    #Calculating the new velocities of the objects after the collision
+    NewVelocity1 = (Object1.mass - Object2.mass) / (Object1.mass + Object2.mass) * Velocity1 + (2 * Object2.mass) / (Object1.mass + Object2.mass) * Velocity2  #v1' = (m1-m2)/(m1+m2)*v1 + (2*m2)/(m1+m2)*v2
+    NewVelocity2 = (Object2.mass - Object1.mass) / (Object1.mass + Object2.mass) * Velocity2 + (2 * Object1.mass) / (Object1.mass + Object2.mass) * Velocity1  #v2' = (m2-m1)/(m1+m2)*v2 + (2*m1)/(m1+m2)*v1
+
+    Object1[3] = NewVelocity1
+    Object2[3] = NewVelocity2
+
+    Objects[Index1] = Object1
+    Objects[Index2] = Object2
+
     return Objects
