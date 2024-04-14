@@ -19,6 +19,7 @@ import random
 NO_PLANETS = 4
 SPEED = 45
 
+
 class SolarSystem():
     def __init__(self):
         self.ready = False
@@ -32,6 +33,7 @@ class SolarSystem():
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
+        sunattr.sun = True
         sun = Planet3D(render, sunattr, "Sun")
         self.planets.append(sun)
         for x in range(num_planets - 1):
@@ -48,6 +50,7 @@ class SolarSystem():
                 random.randint(-10, 10)*10E-7,
                 random.randint(-10, 10)*10E-7
                 ]
+            attr.texture = random.random()
 
             planet = Planet3D(render, attr, f"Planet{x}")
             self.planets.append(planet)
