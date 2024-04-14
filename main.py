@@ -123,9 +123,7 @@ class World(DirectObject):
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
 
         self.audio_manager = AudioManager.create_AudioManager()
-        self.sound = self.audio_manager.get_sound("Sounds/732054__klankbeeld__calm-village-958-pm-220522_0369.wav")
-        self.sound.setLoop(True)
-        self.sound.play()
+        self.sound = self.audio_manager.get_sound("Sounds/51230__rutgermuller__atmospheric-ambient-spacy-synth-beat.wav")
 
         self.title = OnscreenText(
             text="Panda3D: Tutorial 3 - Events",
@@ -135,8 +133,6 @@ class World(DirectObject):
 
         self.accept("escape", sys.exit)
         self.accept("mouse1", self.handleMouseClick)
-
-
         task_manager.add(self.update, "updateSolarSystem", taskChain="taskChain")
 
     def handleMouseClick(self):
@@ -184,4 +180,3 @@ if __name__ == "__main__":
     g = Graphics(base)
 
     base.run()
-
