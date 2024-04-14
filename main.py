@@ -17,7 +17,7 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 12
+NO_PLANETS = 20
 SPEED = 45000
 AMBIENT_LEVEL = 0.7
 
@@ -49,7 +49,7 @@ class SolarSystem():
         self.deleted_trails = []
 
         sunattr = PlanetAttributes()
-        sunattr.mass = 500
+        sunattr.mass = 500 
         sunattr.radius = 1
         sunattr.position=Vec3(0,0,0)
 
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     filters.setBloom(size = "medium")
 
     task_manager = TaskManager()
-    task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
+    task_manager.setupTaskChain("taskChain", numThreads = 4, tickClock = True,
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
 

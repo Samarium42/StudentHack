@@ -10,7 +10,7 @@ GRAVITATIONAL_CONSTANT = 6.674 * 10**-11
 def calcGravitationalForce (Object1mass, Object2mass, Radius1, Radius2, Location1, Location2):
     Distance = math.sqrt((Location1[0] - Location2[0])**2 + (Location1[1] - Location2[1])**2 + (Location1[2] - Location2[2])**2)
     if Distance == 0: 
-        return 0
+        return [0,0,0]
     ForceMagnitude = GRAVITATIONAL_CONSTANT * (Object1mass * Object2mass) / Distance**2  # F=G*(m1*m2)/r^2
     Direction = [(Location2[i] - Location1[i]) / Distance for i in range(len(Location1))]  # Direction of the force
     Force = [ForceMagnitude * direction for direction in Direction]  # Force ratio-ed in each direction
@@ -117,6 +117,8 @@ def modelCollisionsBouncing(Objects, Index1, Index2):
     return Objects
 
 def shiftToCentre(Objects, largest):
+    if largest == None:
+        return Objects
     center = largest.attributes.position
     for obj in Objects:
         for i in range(3):
