@@ -10,7 +10,7 @@ GRAVITATIONAL_CONSTANT = 6.674 * 10**-11
 def calcGravitationalForce (Object1mass, Object2mass, Radius1, Radius2, Location1, Location2):
     Distance = math.sqrt((Location1[0] - Location2[0])**2 + (Location1[1] - Location2[1])**2 + (Location1[2] - Location2[2])**2)
     if Distance == 0: 
-        return 0
+        return [0,0,0]
     ForceMagnitude = GRAVITATIONAL_CONSTANT * (Object1mass * Object2mass) / Distance**2  # F=G*(m1*m2)/r^2
     Direction = [(Location2[i] - Location1[i]) / Distance for i in range(len(Location1))]  # Direction of the force
     Force = [ForceMagnitude * direction for direction in Direction]  # Force ratio-ed in each direction
@@ -68,7 +68,7 @@ def modelCollisions(Objects, Index1, Index2):
     total_volume = vol1 + vol2
     final_radius = ((total_volume) / (math.pi * 4/3)) ** (1/3)
 
-    print(f"{r1} + {r2} = {final_radius}")
+    # print(f"{r1} + {r2} = {final_radius}")
 
     o1.attributes.mass = total_mass
     o1.attributes.radius = final_radius
@@ -84,7 +84,6 @@ def modelCollisions(Objects, Index1, Index2):
      ]
 
     o2.delete()
-    Objects.pop(Index2)
     return Objects
 
 
@@ -117,12 +116,25 @@ def modelCollisionsBouncing(Objects, Index1, Index2):
 
     return Objects
 
-def updateAllObjects (Objects, size=500, time=1):
-    for i in range(len(Objects) - 1, -1, -1):
-        if i == 0:
-            continue
+def shiftToCentre(Objects, largest):
+    if largest == None:
+        return Objects
+    center = largest.attributes.position
+    for obj in Objects:
+        for i in range(3):
+            obj.attributes.position[i] -= largest.attributes.position[i]
+    return Objects
 
+
+def updateAllObjects (Objects, size=500, time=1):
+    largest = None
+    for i in range(len(Objects) - 1, -1, -1):
+        ob = Objects[i]
         updatePosition(Objects, i, time)
+
+        if largest is None or largest.attributes.mass < ob.attributes.mass:
+            largest = ob
+
         """
         ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
         """
@@ -138,4 +150,5 @@ def updateAllObjects (Objects, size=500, time=1):
         for j in range(len(Objects) -1, i, -1):
             if (math.sqrt((Objects[i].attributes.position[0] - Objects[j].attributes.position[0])**2 + (Objects[i].attributes.position[1] - Objects[j].attributes.position[1])**2 + (Objects[i].attributes.position[2] - Objects[j].attributes.position[2])**2) < Objects[i].attributes.radius + Objects[j].attributes.radius):
                 modelCollisions(Objects, i, j)
-    return Objects
+
+    return shiftToCentre(Objects, largest)

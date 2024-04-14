@@ -1,10 +1,12 @@
 from dataclasses import dataclass
-from panda3d.core import Vec3, Point3, Vec4
+from panda3d.core import Vec3, Point3, Vec4, SphereLight, LVector3
 from direct.motiontrail.MotionTrail import MotionTrail
 import math
 
 trail_thickness = 0.4
-trail_lag = 8
+trail_lag = 4
+trail_color = Vec4(0.5, 0.5, 0.5, 0.5)
+
 sun_texture = "models/sun_1k_tex.jpg"
 planet_textures = [
         "models/deimos_1k_tex.jpg",
@@ -21,14 +23,15 @@ class PlanetAttributes:
     mass = 2
     radius = 5.0
     position = [0, 0, 0]
-    velocity = [0, 0, 0]
-    texture = 0
+    velocity = [0., 0., 0.]
     sun = False
 
 
 class Planet():
     def __init__(self):
         self.attributes = PlanetAttributes()
+    def delete(self):
+        self = None
 
 
 class Planet3D(Planet):
@@ -65,11 +68,26 @@ class Planet3D(Planet):
         self.motion_trail.add_vertex(Point3(0, -trail_thickness/2, trail_thickness * math.sqrt(3)/4))
         self.motion_trail.add_vertex(Point3(0, 0, -trail_thickness * math.sqrt(3)/4))
 
-        self.motion_trail.set_vertex_color(0, Vec4(1.0, 1.0, 1.0, 1),     Vec4(0.0, 0.0, 0.0, 1))
-        self.motion_trail.set_vertex_color(1, Vec4(1.0, 1.0, 1.0, 1),     Vec4(0.0, 0.0, 0.0, 1))
-        self.motion_trail.set_vertex_color(2, Vec4(1.0, 1.0, 1.0, 1),     Vec4(0.0, 0.0, 0.0, 1))
+        self.motion_trail.set_vertex_color(0, trail_color, Vec4(0.0, 0.0, 0.0, 1))
+        self.motion_trail.set_vertex_color(1, trail_color, Vec4(0.0, 0.0, 0.0, 1))
+        self.motion_trail.set_vertex_color(2, trail_color, Vec4(0.0, 0.0, 0.0, 1))
         self.motion_trail.time_window = trail_lag
         self.motion_trail.update_vertices()
+
+        if self.attributes.sun:
+            plight = SphereLight(f"plight{name}")
+            plight.radius = 400
+            plight.setColor((1, 1, 1, 1))
+            plight.setAttenuation(LVector3(1, 0.04, 1))
+            plight.setShadowCaster(True, 512, 512)
+            plight.setMaxDistance(400)
+
+
+            plnp = self.model.attachNewNode(plight)
+            render.setLight(plnp)
+            plnp.setPos(10,10,10)
+
+            self.model.setDepthOffset(0)
 
 
     def update(self):
@@ -86,7 +104,17 @@ class Planet3D(Planet):
 
     def delete(self):
         self.model.removeNode()
-        #self.motion_trail.reset_motion_trail();
-        #self.motion_trail.reset_motion_trail_geometry();
-        self.motion_trail.reparentTo(self.world)
+        self.motion_trail.unregister_motion_trail()
+        self.motion_trail.reset_motion_trail();
+        self.motion_trail.reset_motion_trail_geometry();
+        #self.motion_trail.reparentTo(self.world)
+
         self.deleted = True
+
+    def add_planet(self, position, velocity):
+        attributes = PlanetAttributes()
+        attributes.position = position
+        attributes.velocity = velocity
+        planet = Planet3D(self.world, attributes, "planet")
+        self.planets.append(planet)
+
