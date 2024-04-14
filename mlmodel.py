@@ -24,7 +24,7 @@ def rewardFunc(planets: list, original_num: int) -> float:
     # normal weight for conservation of mass
     w2 = 1
     reward = 0
-    reward += w1 * RNumPlanets(planets, original_num)  #[0,1] - 0 is best, 1 is worst
+    # reward += w1 * RNumPlanets(planets, original_num)  #[0,1] - 0 is best, 1 is worst
     reward += w2 * RConserved(planets)  #[0,1] - 0 is best, 1 is worst
     #At this point reward is in the range [0,2] where 0 is best and 2 is worst
 
@@ -42,6 +42,11 @@ def RConserved(planets: list) -> float:
     # The smaller the sum the better (conservation of energy) - Centripetal and Gravitational Forces are in Equilibrium
     # Returns a score of 1 if the sum is the best (energy all conserved), 0 if the sum is the worst (energy lost none conserved)
     sum = 0
+    if len(planets) == 1:
+        return 0
+    if len(planets) == 0:
+        return 0
+
     for p in planets:
         for q in planets:
             if p == q:
@@ -80,13 +85,8 @@ def evolve(pop: list, t: int):
     if t > len(pop):
         t = len(pop)
 
-    if t % 2 == 1:
-        t += 1
-
-
-
     # Make key,pair of state and r score
-    scores = [(state, RConserved(simulate(state, 100000))) for state in pop]
+    scores = [(state, rewardFunc(simulate(state, 1), len(state))) for state in pop]
     # sort by score
     scores.sort(key=lambda x: x[1], reverse=True)
 
@@ -117,12 +117,15 @@ def evolve(pop: list, t: int):
 pop = populate(5, 5)
 for s in pop:
     print("SYSTEM:")
+    print(RConserved(s))
     for p in s:
         print("\t", planet_to_array(p))
 
-evol = evolve(pop, 2)
-for s in evol:
-    print("CHILD:")
-    for p in s:
-        print("\t", planet_to_array(p))
 
+for _ in range(3):
+    pop = evolve(pop, 1)
+
+print ("\n\n\n\n")
+
+for s in pop:
+        print(RConserved(s))
