@@ -29,7 +29,9 @@ def rewardFunc(planets: list, original_num: int) -> float:
     return reward
 
 def RNumPlanets(planets: list, original_num: int) -> float:
-    return (original_num-len(planets))/original_num
+    ans = (original_num-len(planets))/original_num
+    print("We are in RNumPlanets", ans)
+    return ans
 
 def RConserved(planets: list) -> float:
     # The smaller the sum the better (conservation of energy) - Centripetal and Gravitational Forces are in Equilibrium
@@ -51,7 +53,8 @@ def simulate (planets: list, period: int) -> list:
         planets = phys.updateAllObjects(planets)
     return planets
 
-def populate(p: int, n: int):
+
+def populate(p: int, n: int): # p is the number of states, n is the number of planets in each state
     population = []
     for _ in range(p):
         state = [] 
@@ -73,5 +76,3 @@ for i in pop:
     for p in i:
         print(planet_to_array(p))
     print("\n\n\n")
-
-

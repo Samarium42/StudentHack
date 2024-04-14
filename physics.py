@@ -9,6 +9,8 @@ GRAVITATIONAL_CONSTANT = 6.674 * 10**-11
 
 def calcGravitationalForce (Object1mass, Object2mass, Radius1, Radius2, Location1, Location2):
     Distance = math.sqrt((Location1[0] - Location2[0])**2 + (Location1[1] - Location2[1])**2 + (Location1[2] - Location2[2])**2)
+    if Distance == 0: 
+        return 0
     ForceMagnitude = GRAVITATIONAL_CONSTANT * (Object1mass * Object2mass) / Distance**2  # F=G*(m1*m2)/r^2
     Direction = [(Location2[i] - Location1[i]) / Distance for i in range(len(Location1))]  # Direction of the force
     Force = [ForceMagnitude * direction for direction in Direction]  # Force ratio-ed in each direction
@@ -32,7 +34,7 @@ def updatePosition (Objects, Index, Time=1):
     PrimaryObject = Objects[Index]
     Position = PrimaryObject.attributes.position
     Velocity = PrimaryObject.attributes.velocity
-    SumofForces = [0,0,0] 
+    SumofForces = [0,0,0]
 
     for object in Objects:
         if object == Objects[Index]:
@@ -41,7 +43,7 @@ def updatePosition (Objects, Index, Time=1):
         SumofForces = [SumofForces[i] + Force[i] for i in range(3)]  # Update each component of the force
 
     # Update the velocity and position of the primary object
-    Acceleration = [force / PrimaryObject.attributes.mass for force in SumofForces]  # F = ma, so a = F/m
+    Acceleration = [force / (2*PrimaryObject.attributes.mass) for force in SumofForces]  # F = ma, so a = F/m
     NewVelocity = [Velocity[i] + Acceleration[i] * Time for i in range(3)]  # v = u + at
     NewPosition = [Position[i] + NewVelocity[i] * Time for i in range(3)]  # s = ut + 1/2at^2
 
@@ -59,8 +61,10 @@ def modelCollisions(Objects, Index1, Index2):
 
     vol1 = (4/3) * math.pi * (r1 ** 3)
     vol2 = (4/3) * math.pi * (r2 ** 3)
+    m1 = o1.attributes.mass
+    m2 = o2.attributes.mass
+    total_mass = m1 + m2
 
-    total_mass = o1.attributes.mass + o2.attributes.mass
     total_volume = vol1 + vol2
     final_radius = ((total_volume) / (math.pi * 4/3)) ** (1/3)
 
@@ -70,7 +74,7 @@ def modelCollisions(Objects, Index1, Index2):
     o1.attributes.radius = final_radius
 
     o1.attributes.velocity = [
-     o1.attributes.velocity[i] + o2.attributes.velocity[i]
+     (m1 * o1.attributes.velocity[i] + m2 * o2.attributes.velocity[i]) / (total_mass)
      for i in range(3)
      ]
 
@@ -81,7 +85,6 @@ def modelCollisions(Objects, Index1, Index2):
 
     o2.delete()
     Objects.pop(Index2)
-    
     return Objects
 
 
