@@ -111,3 +111,10 @@ class Planet3D(Planet):
 
         self.deleted = True
 
+    def add_planet(self, position, velocity):
+        attributes = PlanetAttributes()
+        attributes.position = position
+        attributes.velocity = velocity
+        planet = Planet3D(self.world, attributes, "planet")
+        self.planets.append(planet)
+
