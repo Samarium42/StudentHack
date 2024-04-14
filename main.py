@@ -4,9 +4,10 @@ from graphics import Graphics
 #from mlmodel import RConserved
 
 from direct.showbase.ShowBase import ShowBase, WindowProperties
+from direct.filter.CommonFilters import CommonFilters
 base = ShowBase()
 
-from panda3d.core import NodePath, PandaNode, TextNode, Vec3
+from panda3d.core import NodePath, PandaNode, TextNode, Vec3, AmbientLight
 from direct.interval.IntervalGlobal import *
 from direct.gui.DirectGui import *
 from direct.showbase.DirectObject import DirectObject
@@ -31,6 +32,12 @@ class SolarSystem():
         self.sky.setTexture(self.sky_tex, 1)
         self.sky.reparentTo(render)
         self.sky.setScale(400)
+
+        alight = AmbientLight('alight')
+        alight.setColor((0.6, 0.6, 0.6, 1))
+        alnp = render.attachNewNode(alight)
+        render.setLight(alnp)
+        render.setShaderAuto()
 
     def loadPlanets(self, num_planets: int):
         self.planets = []
@@ -116,11 +123,16 @@ class World(DirectObject):
 
 
 if __name__ == "__main__":
+
+
     wp = WindowProperties()
     wp.setFullscreen(1)
     wp.setSize(1280, 720)
     base.openMainWindow()
     base.win.requestProperties(wp)
+
+    filters = CommonFilters(base.win, base.cam)
+    filters.setBloom(size = "medium")
 
     task_manager = TaskManager()
     task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
