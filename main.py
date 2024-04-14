@@ -16,6 +16,15 @@ from direct.task.Task import TaskManager
 import sys
 from physics import updateAllObjects
 import random
+import threading
+from music21 import stream, midi, duration
+from music21 import chord
+import simpleaudio as sa
+
+def play(audio_data):
+    play_obj = sa.play_buffer(audio_data, num_channels=2, bytes_per_sample=2, sample_rate=44100)
+    play_obj.wait_done()
+
 
 NO_PLANETS = 4
 SPEED = 45
@@ -65,6 +74,21 @@ class World(DirectObject):
     def genLabelText(self, text, i):
         return OnscreenText(text=text, pos=(0.06, -.06 * (i + 0.5)), fg=(1, 1, 1, 1),
                             parent=base.a2dTopLeft,align=TextNode.ALeft, scale=.05)
+    
+    def play_sound(self, task):
+        melody = musicmodel.GenerateAudio(self.solar_system.planets, collision=False, n=4)
+        sampling_rate = 44100
+        for chords in melody:
+            self.play_chord(chords)
+        return task.cont
+
+    def play_chord(self, chord):
+        s = stream.Stream()
+        s.append(chord)
+        sp = midi.realtime.StreamPlayer(s)
+        sp.play()
+        timer = threading.Timer(0.5, sp.stop)
+        timer.start()
 
     def __init__(self, task_manager):
         # The standard camera position and background initialization
@@ -76,11 +100,6 @@ class World(DirectObject):
         self.solar_system = SolarSystem()
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
 
-        melody = musicmodel.GenerateAudio(random.randint(0,100))
-        sampling_rate = 44100
-        sd.play(melody, sampling_rate)
-        sd.wait()
-
         self.title = OnscreenText(
             text="Panda3D: Tutorial 3 - Events",
             parent=base.a2dBottomRight, align=TextNode.A_right,
@@ -90,6 +109,7 @@ class World(DirectObject):
         self.accept("mouse1", self.handleMouseClick)
 
         task_manager.add(self.update, "updateSolarSystem", taskChain="taskChain")
+        task_manager.add(self.play_sound, 'Play Sound')  # Add the task to the task manager
 
     def handleMouseClick(self):
         pass

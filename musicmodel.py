@@ -1,28 +1,30 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.io.wavfile import write
+from music21 import chord
 
-def GenerateAudio(Collision=False, n=10, duration=5, sampling_rate=44100, frequency=440):
-    # Set parameters
-    duration = duration  # Duration of the melody in seconds
-    sampling_rate = sampling_rate  # Sampling rate (samples per second)
-    frequency = frequency  # Frequency of the note (A4)
+def GenerateAudio(planets, collision=False, n=10):
 
-    # Generate time array
-    t = np.linspace(0, duration, int(sampling_rate * duration))
+    tfrequency = 440
+    # For each planet, generate a sine wave with a frequency based on the planet's position
+    for planet in planets:
+        # Calculate the frequency for this planet
+        # You can replace this with any function of the planet's position that gives a pleasant sound
+        frequency = 440 + planet.attributes.position[0] * 10 + planet.attributes.position[1] * 10 + planet.attributes.position[2] * 10
 
-    # Create a sine wave for the melody
-    melody = np.sin(2 * np.pi * frequency * t)
+        tfrequency += frequency
 
-    # Normalize the melody
-    melody /= np.max(np.abs(melody))
+    dmaj7 = chord.Chord(['D', 'F#', 'A', 'C#'])
+    cmaj7 = chord.Chord(['C', 'E', 'G', 'B'])
+    fadd9 = chord.Chord(['F', 'A', 'C', 'G'])
+    dshmaj7 = chord.Chord(['D#', 'G', 'A#', 'D'])
+    e7 = chord.Chord(['E', 'G#', 'B', 'D'])
+    g6 = chord.Chord(['G', 'B', 'D', 'E'])
+    f5 = chord.Chord(['F', 'A', 'C'])
+    f6 = chord.Chord(['F', 'A', 'C', 'D'])
+    c2 = chord.Chord(['C', 'E', 'G', 'B'])
+    list_of_chords = [dmaj7, cmaj7, fadd9, dshmaj7, e7, g6, f5, f6]
 
     # Generate a collision sound
-    if Collision:
-        collision = np.random.rand(sampling_rate * duration)
-        collision /= np.max(np.abs(collision))
-        audio = melody + collision
-    else:
-        audio = melody
-        
-    return audio
+    if collision:
+        tfrequency = c2
+
+    return list_of_chords[int(tfrequency%len(list_of_chords))]
