@@ -18,7 +18,8 @@ from physics import updateAllObjects
 import random
 
 NO_PLANETS = 12
-SPEED = 45
+SPEED = 45000
+AMBIENT_LEVEL = 0.7
 
 
 class SolarSystem():
@@ -34,7 +35,11 @@ class SolarSystem():
         self.sky.setScale(400)
 
         alight = AmbientLight('alight')
-        alight.setColor((0.6, 0.6, 0.6, 1))
+        alight.setColor((
+            AMBIENT_LEVEL,
+            AMBIENT_LEVEL,
+            AMBIENT_LEVEL,
+            1))
         alnp = render.attachNewNode(alight)
         render.setLight(alnp)
         render.setShaderAuto()
@@ -73,7 +78,8 @@ class SolarSystem():
         self.ready = True
 
     def update(self, task):
-        updateAllObjects(self.planets, time=SPEED)
+        dt = globalClock.getDt()
+        updateAllObjects(self.planets, time=dt*SPEED)
         for i in range(len(self.planets)-1, -1, -1):
             planet = self.planets[i]
             if planet.deleted:
