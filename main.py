@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from mlmodel import planet_to_array, populate
+from mlmodel import genetic, planet_to_array, populate
 from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
 #from mlmodel import RConserved
@@ -22,6 +22,9 @@ NO_PLANETS = 20
 SPEED = 45000
 AMBIENT_LEVEL = 0.7
 
+
+states = genetic(10,10,10,10)
+print(len(states))
 
 class SolarSystem():
     def __init__(self):
@@ -90,8 +93,6 @@ class SolarSystem():
     def update(self, task):
         dt = globalClock.getDt()
         time = int(globalClock.getFrameTime())
-        if time % 5 == 0:
-           print("")
 
         updateAllObjects(self.planets, time=dt*SPEED)
         for i in range(len(self.planets)-1, -1, -1):
@@ -144,10 +145,7 @@ class World(DirectObject):
 
 if __name__ == "__main__":
 
-    pop = populate(10, 10)
-    planets = pop[0]
-    for p in planets:
-        print(planet_to_array(p))
+    planets = states[1]
 
     wp = WindowProperties()
     wp.setFullscreen(1)

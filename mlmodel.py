@@ -4,6 +4,7 @@ import physics as phys
 import random
 from planet import Planet
 
+random.seed(1002)
 saved_states = []
 
 def get_saved_states():
@@ -29,7 +30,7 @@ def rewardFunc(planets: list, original_num: int) -> float:
     # normal weight for conservation of mass
     w2 = 1
     reward = 0
-    # reward += w1 * RNumPlanets(planets, original_num)  #[0,1] - 0 is best, 1 is worst
+    reward += w1 * RNumPlanets(planets, original_num)  #[0,1] - 0 is best, 1 is worst
     reward += w2 * RConserved(planets)  #[0,1] - 0 is best, 1 is worst
     #At this point reward is in the range [0,2] where 0 is best and 2 is worst
 
@@ -40,7 +41,7 @@ def rewardFunc(planets: list, original_num: int) -> float:
 
 def RNumPlanets(planets: list, original_num: int) -> float:
     ans = (original_num-len(planets))/original_num
-    print("We are in RNumPlanets", ans)
+    # print("ee are in RNumPlanets", ans)
     return ans
 
 def RConserved(planets: list) -> float:
@@ -64,7 +65,7 @@ def RConserved(planets: list) -> float:
 
 # Given the states of planets and a simulation period, p, updates the states of the system p times and returns the final state
 def simulate (planets: list, period: int) -> list:
-    step_size = period // 3
+    step_size = period // 2
 
     for i in range(period):
         planets = phys.updateAllObjects(planets)
@@ -139,27 +140,22 @@ def genetic(pop_size, no_planets, evolutions, harshness):
 
     return saved_states
 
-# pop = populate(10, 5)
-# for s in pop:
-#     print("SYSTEM:")
-#     start += RConserved(s)
-#     for p in s:
-#         print("\t", planet_to_array(p))
-#
-#
-# for _ in range(5):
-#     pop = evolve(pop, 2)
-#
-# print ("\n\n\n\n")
-#
-# print(saved_states)
-#
-# end=0
-# for s in pop:
-#     end+= RConserved(s)
-#     print(RConserved(s))
-#
-#
-# print(f"Average start value: {start / 10}")
-# print(f"Average end value:   {end / 10}")
-# print(f"Percentage improvement: {(start - end)/start * 100}")
+start = 0
+pop = populate(10, 5)
+for s in pop:
+    start += RConserved(s)
+
+
+for _ in range(5):
+    pop = evolve(pop, 2)
+
+
+end=0
+for s in pop:
+    end+= RConserved(s)
+    print(RConserved(s))
+
+
+print(f"Average start value: {start / 10}")
+print(f"Average end value:   {end / 10}")
+print(f"Percentage improvement: {(start - end)/start * 100}")
