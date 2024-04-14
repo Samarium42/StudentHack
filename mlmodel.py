@@ -7,6 +7,8 @@ from planet import Planet
 random.seed(1002)
 saved_states = []
 
+PERIOD = 10
+
 def get_saved_states():
     return saved_states
 
@@ -98,7 +100,7 @@ def evolve(pop: list, t: int):
         t = len(pop)
 
     # Make key,pair of state and r score
-    scores = [(state, rewardFunc(simulate(state, 10), len(state))) for state in pop]
+    scores = [(state, rewardFunc(simulate(state, PERIOD), len(state))) for state in pop]
     # sort by score
     scores.sort(key=lambda x: x[1], reverse=True)
 
