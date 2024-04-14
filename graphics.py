@@ -26,7 +26,7 @@ class Graphics:
         self.slider.reparentTo(self.aspect2d)
         self.slider.hide()
 
-        self.label = DirectLabel(text="Select generation: 0", pos=(-0.8, 0, 0.9), scale=0.06, parent=self.aspect2d)
+        self.label = DirectLabel(text="   Generation number: 000   ", pos=(-0.8, 0, 0.9), scale=0.06, parent=self.aspect2d)
         self.label.setTransparency(1)
         self.label.hide()
 
@@ -100,7 +100,7 @@ class Graphics:
 
     def slider_callback(self):
         slider_value = round(self.slider['value'])
-        self.label['text'] = f"Generation number: {slider_value*PERIOD}"
+        self.label['text'] = f"  Generation number: {slider_value*PERIOD}  "
 
 
     def entry_callback_x(self, value):
