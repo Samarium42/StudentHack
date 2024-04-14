@@ -8,6 +8,9 @@ base = ShowBase()
 
 from panda3d.core import Point3
 from panda3d.core import AudioManager, AudioSound
+from panda3d.core import loadPrcFileData
+from panda3d.openvr import OpenVRDevice, OpenVRStereoDisplayRegion
+
 
 from panda3d.core import NodePath, PandaNode, TextNode, Vec3
 from direct.interval.IntervalGlobal import *
@@ -77,6 +80,17 @@ class World(DirectObject):
         #base.disableMouse()
         camera.setPos(0, 0, 45)
         camera.setHpr(0, -90, 0)
+
+
+        # Enable VR
+        loadPrcFileData("", "load-display pandagl")
+        self.vr_device = OpenVRDevice()
+        if not self.vr_device.init():
+            print("Failed to initialize VR device")
+            return
+        # Create a stereo display region for VR
+        self.vr_display_region = OpenVRStereoDisplayRegion(self.vr_device, base.cam, base.win)
+
 
         self.solar_system = SolarSystem()
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
