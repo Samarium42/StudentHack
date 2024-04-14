@@ -160,11 +160,11 @@ class World(DirectObject):
 
 if __name__ == "__main__":
 
-    planets = states[1]
+    planets = states[75]
 
     wp = WindowProperties()
-    wp.setFullscreen(1)
-    wp.setSize(1280, 720)
+    wp.setFullscreen(0)
+    wp.setSize(3072, 1920)
     base.openMainWindow()
     base.win.requestProperties(wp)
 
