@@ -16,7 +16,7 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 6
+NO_PLANETS = 12
 SPEED = 45
 
 
@@ -27,7 +27,7 @@ class SolarSystem():
 
     def createSky(self):
         self.sky = loader.loadModel("models/solar_sky_sphere")
-        self.sky_tex = loader.loadTexture("models/stars_1k_tex.jpg")
+        self.sky_tex = loader.loadTexture("models/stars.png")
         self.sky.setTexture(self.sky_tex, 1)
         self.sky.reparentTo(render)
         self.sky.setScale(400)
@@ -37,8 +37,8 @@ class SolarSystem():
         self.deleted_trails = []
 
         sunattr = PlanetAttributes()
-        sunattr.mass = 10
-        sunattr.radius = 1.2
+        sunattr.mass = 500
+        sunattr.radius = 1
         sunattr.position=Vec3(0,0,0)
 
         sunattr.sun = True
@@ -47,11 +47,11 @@ class SolarSystem():
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
             attr.mass = random.randint(1, 20) * 10
-            attr.radius = random.randint(1, 5)*0.1
+            attr.radius = random.randint(1, 5) * 0.05
             attr.position = [
-                random.randint(-10, 10),
-                random.randint(-10, 10),
-                random.randint(-10, 10)
+                random.randint(-20, 20),
+                random.randint(-20, 20),
+                random.randint(-20, 20)
                 ]
             attr.velocity = [
                 random.randint(-10, 10)*10E-7,
@@ -89,11 +89,6 @@ class World(DirectObject):
 
         self.solar_system = SolarSystem()
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
-
-        self.title = OnscreenText(
-            text="Panda3D: Tutorial 3 - Events",
-            parent=base.a2dBottomRight, align=TextNode.A_right,
-            style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07)
 
         self.accept("escape", sys.exit)
         self.accept("mouse1", self.handleMouseClick)
