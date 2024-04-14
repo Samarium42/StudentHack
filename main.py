@@ -20,6 +20,7 @@ from direct.task.Task import TaskManager
 import sys
 from physics import updateAllObjects
 import random
+from panda3d.core import AmbientLight
 
 NO_PLANETS = 20
 SPEED = 45000
@@ -137,7 +138,7 @@ class World(DirectObject):
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
 
         self.audio_manager = AudioManager.create_AudioManager()
-        self.sound = self.audio_manager.get_sound("Sounds/51230__rutgermuller__atmospheric-ambient-spacy-synth-beat.wav")
+        self.sound = self.audio_manager.get_sound("Sounds/Sound.wv")
 
         self.title = OnscreenText(
             text="Panda3D: Tutorial 3 - Events",
