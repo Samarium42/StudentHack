@@ -23,8 +23,7 @@ class PlanetAttributes:
     mass = 2
     radius = 5.0
     position = [0, 0, 0]
-    velocity = [0, 0, 0]
-    texture = 0
+    velocity = [0., 0., 0.]
     sun = False
 
 

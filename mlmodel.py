@@ -72,8 +72,8 @@ def populate(p: int, n: int): # p is the number of states, n is the number of pl
             q = Planet()
             q.attributes.mass = random.randint(1,10)
             q.attributes.radius = random.uniform(1, 10)
-            q.attributes.position = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
-            q.attributes.velocity = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
+            q.attributes.position = [random.randint(-20,20), random.randint(-20,20), random.randint(-20,20)]
+            q.attributes.velocity = [random.randint(0,10)*10E-7, random.randint(0,10)*10E-7, random.randint(0,10)*10E-7]
             state.append(q)
         population.append(state)
 
@@ -106,15 +106,20 @@ def evolve(pop: list, t: int):
     # We are making new children to make a population of the same size
     for _ in range (diff):
         # Each child should have length of the others
-        child = []
-        for i in range(len(pop[0])-1):
-            parent_i = random.randint(0,len(parents)-1)
-            child.insert(i, parents[parent_i][i])
+        random_mum = parents[random.randint(0,len(parents)-1)]
+        random_dad = parents[random.randint(0, len(parents)-1)]
+        child = random_mum
+
+        for i in range(len(child)):
+            if random.uniform(0,1) > 0.4:
+                if i < len(random_dad):
+                    child[i] = random_dad[i]
+
         children.append(child)
 
     return parents + children
 
-pop = populate(5, 5)
+pop = populate(10, 5)
 for s in pop:
     print("SYSTEM:")
     print(RConserved(s))
@@ -122,8 +127,8 @@ for s in pop:
         print("\t", planet_to_array(p))
 
 
-for _ in range(3):
-    pop = evolve(pop, 1)
+for _ in range(1):
+    pop = evolve(pop, 4)
 
 print ("\n\n\n\n")
 
