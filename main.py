@@ -118,7 +118,7 @@ class World(DirectObject):
 
 if __name__ == "__main__":
     task_manager = TaskManager()
-    task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
+    task_manager.setupTaskChain("taskChain", numThreads = 4, tickClock = True,
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
     w = World(task_manager)
