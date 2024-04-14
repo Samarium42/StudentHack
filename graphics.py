@@ -4,9 +4,12 @@ from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import NodePath
 from planet import Planet,PlanetAttributes
 from direct.gui.DirectEntry import DirectEntry
+from mlmodel import PERIOD
 
 class Graphics:
-    def __init__(self, base):
+    def __init__(self, base, solar_system, states):
+        self.solar_system = solar_system
+        self.states = states
         self.aspect2d = base.aspect2d
         self.aspect2d.setDepthTest(False)
         
@@ -17,17 +20,17 @@ class Graphics:
         self.button.setPos(-0.9, 0, 0.8)
         self.button.reparentTo(self.aspect2d)
 
-        self.slider = DirectSlider(range=(0, 100), command=self.slider_callback)
+        self.slider = DirectSlider(range=(0, len(self.states) - 1), command=self.slider_callback)
         self.slider.setScale(0.4)
         self.slider.setPos(-0.8, 0, 0.8)
         self.slider.reparentTo(self.aspect2d)
         self.slider.hide()
 
-        self.label = DirectLabel(text="Select number of planets: 0", pos=(-0.8, 0, 0.9), scale=0.06, parent=self.aspect2d)
+        self.label = DirectLabel(text="Select generation: 0", pos=(-0.8, 0, 0.9), scale=0.06, parent=self.aspect2d)
         self.label.setTransparency(1)
         self.label.hide()
 
-        self.button2 = DirectButton(text = "Add Planet", command = self.show_add_planet_menu)
+        self.button2 = DirectButton(text = "Simulate", command = self.show_epoch)
         self.button2.setScale(0.07)
         self.button2.setPos(-0.8, 0, 0.7)
         self.button2.hide()
@@ -97,8 +100,7 @@ class Graphics:
 
     def slider_callback(self):
         slider_value = round(self.slider['value'])
-        self.label['text'] = f"Number of planets: {slider_value}"
-
+        self.label['text'] = f"Generation number: {slider_value*PERIOD}"
 
 
     def entry_callback_x(self, value):
@@ -131,6 +133,12 @@ class Graphics:
         entry_value = float(value)
         self.planet.attributes.velocity[2] = entry_value
         self.label['text'] = f"Z velocity: {entry_value}"
+
+    def show_epoch(self):
+        self.solar_system.delete()
+        slider_value = round(self.slider['value'])
+        planets = self.states[slider_value]
+        self.solar_system.loadPlanets(planets)
 
 
     def show_add_planet_menu(self):

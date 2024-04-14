@@ -23,6 +23,7 @@ SPEED = 45000
 AMBIENT_LEVEL = 0.7
 
 
+
 states = genetic(10,10,10,10)
 print(len(states))
 
@@ -47,6 +48,18 @@ class SolarSystem():
         alnp = render.attachNewNode(alight)
         render.setLight(alnp)
         render.setShaderAuto()
+
+
+    def delete(self):
+        for planet in self.planets:
+            planet.delete()
+
+        for i in range(len(self.planets)-1, -1, -1):
+            planet = self.planets[i]
+            self.planets.pop(i)
+
+
+        print(len(self.planets))
 
 
     def loadPlanets(self, planets: list):
@@ -103,6 +116,7 @@ class SolarSystem():
 
             planet.update()
 
+
 class World(DirectObject):
     def genLabelText(self, text, i):
         return OnscreenText(text=text, pos=(0.06, -.06 * (i + 0.5)), fg=(1, 1, 1, 1),
@@ -137,6 +151,7 @@ class World(DirectObject):
         self.solar_system.update(task)
         return task.cont
 
+
 #########################################################################
 # Except for the one commented line below, this is all as it was before #
 # Scroll down to the next comment to see an example of sending messages #
@@ -162,7 +177,7 @@ if __name__ == "__main__":
                            frameSync = True, timeslicePriority = False)
 
     w = World(task_manager, planets)
-    g = Graphics(base)
+    g = Graphics(base, w.solar_system, states)
 
     base.run()
 
