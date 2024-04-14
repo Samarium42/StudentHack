@@ -41,7 +41,7 @@ def RConserved(planets: list) -> float:
         for q in planets:
             if p == q:
                 continue
-            sum += abs((phys.GRAVITATIONAL_CONSTANT * q.mass)/np.linalg.norm(q.position - p.position) - (q.velocity)**2)
+            sum += abs((phys.GRAVITATIONAL_CONSTANT * q.attributes.mass)/np.linalg.norm(np.asarray(q.attributes.position) - np.asarray(p.attributes.position) - np.asarray(q.attributes.velocity)**2))
         if sum == 0:
             return 1
         else:
@@ -75,4 +75,7 @@ for i in pop:
     print("Solar system:")
     for p in i:
         print(planet_to_array(p))
+    print(RConserved(i))
     print("\n\n\n")
+
+

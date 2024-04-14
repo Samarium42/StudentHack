@@ -5,6 +5,16 @@ import math
 
 trail_thickness = 0.4
 trail_lag = 8
+sun_texture = "models/sun_1k_tex.jpg"
+planet_textures = [
+        "models/deimos_1k_tex.jpg",
+        "models/earth_1k_tex.jpg",
+        "models/mars_1k_tex.jpg",
+        "models/mercury_1k_tex.jpg",
+        "models/moon_1k_tex.jpg",
+        "models/phobos_1k_tex.jpg",
+        "models/venus_1k_tex.jpg"
+        ]
 
 @dataclass
 class PlanetAttributes:
@@ -12,6 +22,8 @@ class PlanetAttributes:
     radius = 5.0
     position = [0, 0, 0]
     velocity = [0, 0, 0]
+    texture = 0
+    sun = False
 
 
 class Planet():
@@ -27,7 +39,13 @@ class Planet3D(Planet):
         self.deleted = False
 
         self.model = loader.loadModel("models/planet_sphere")
-        self.texture = loader.loadTexture("models/sun_1k_tex.jpg")
+
+        if self.attributes.sun:
+            texture = sun_texture
+        else:
+            texture = planet_textures[int((len(planet_textures) * attributes.texture) % len(planet_textures))]
+
+        self.texture = loader.loadTexture(texture)
 
         self.model.setTexture(self.texture, 1)
         self.model.reparentTo(world)
