@@ -29,7 +29,7 @@ class SolarSystem():
         self.deleted_trails = []
 
         sunattr = PlanetAttributes()
-        sunattr.mass = 10
+        sunattr.mass = 100
         sunattr.radius = 1.2
         sunattr.position=Vec3(0,0,0)
 
@@ -69,6 +69,7 @@ class World(DirectObject):
                             parent=base.a2dTopLeft,align=TextNode.ALeft, scale=.05)
 
     def __init__(self, task_manager):
+        self.update_counter = 0
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
         #base.disableMouse()
@@ -100,6 +101,9 @@ class World(DirectObject):
     def update(self, task):
         self.solar_system.update()
         print(RConserved(self.solar_system.planets))
+        self.update_counter += 1
+        if self.update_counter % 100 == 0:
+            print(f"{self.update_counter} updates")
         return task.cont
 
 #########################################################################

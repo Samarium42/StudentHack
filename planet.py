@@ -29,6 +29,8 @@ class PlanetAttributes:
 class Planet():
     def __init__(self):
         self.attributes = PlanetAttributes()
+    def delete(self):
+        self = None
 
 
 class Planet3D(Planet):

@@ -68,7 +68,7 @@ def modelCollisions(Objects, Index1, Index2):
     total_volume = vol1 + vol2
     final_radius = ((total_volume) / (math.pi * 4/3)) ** (1/3)
 
-    print(f"{r1} + {r2} = {final_radius}")
+    # print(f"{r1} + {r2} = {final_radius}")
 
     o1.attributes.mass = total_mass
     o1.attributes.radius = final_radius
