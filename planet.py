@@ -4,7 +4,7 @@ from direct.motiontrail.MotionTrail import MotionTrail
 import math
 
 trail_thickness = 0.4
-trail_lag = 8
+trail_lag = 4
 sun_texture = "models/sun_1k_tex.jpg"
 planet_textures = [
         "models/deimos_1k_tex.jpg",

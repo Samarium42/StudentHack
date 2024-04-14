@@ -23,6 +23,14 @@ SPEED = 45
 class SolarSystem():
     def __init__(self):
         self.ready = False
+        self.createSky()
+
+    def createSky(self):
+        self.sky = loader.loadModel("models/solar_sky_sphere")
+        self.sky_tex = loader.loadTexture("models/stars_1k_tex.jpg")
+        self.sky.setTexture(self.sky_tex, 1)
+        self.sky.reparentTo(render)
+        self.sky.setScale(400)
 
     def loadPlanets(self, num_planets: int):
         self.planets = []
@@ -76,7 +84,7 @@ class World(DirectObject):
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
         #base.disableMouse()
-        camera.setPos(0, 0, 45)
+        camera.setPos(0, 45, 45)
         camera.setHpr(0, -90, 0)
 
         self.solar_system = SolarSystem()
