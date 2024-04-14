@@ -9,14 +9,14 @@ class PlanetAttributes:
     position = [0, 0, 0]
     velocity = [0, 0, 0]
 
+
 class Planet():
-    def __init__(self, attributes: PlanetAttributes):
-        self.attributes = attributes
-
-
+    def __init__(self):
+        self.attributes = PlanetAttributes()
+    
 class Planet3D(Planet):
     def __init__(self, world, attributes: PlanetAttributes, name):
-        Planet.__init__(self, attributes)
+        self.attributes = attributes
 
         self.model = loader.loadModel("models/planet_sphere")
         self.texture = loader.loadTexture("models/sun_1k_tex.jpg")
@@ -33,7 +33,6 @@ class Planet3D(Planet):
                 )
         self.motion_trail = MotionTrail(name, self.model)
         self.motion_trail.register_motion_trail()
-    
 
     def update(self):
         self.model.setPos(

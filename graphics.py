@@ -9,7 +9,7 @@ class Graphics:
         self.aspect2d = base.aspect2d
         self.aspect2d.setDepthTest(False)
         
-        self.planet = Planet(PlanetAttributes)  # Assuming default attributes are set in Planet class
+        self.planet = Planet()  # Assuming default attributes are set in Planet class
         
         self.button = DirectButton(text="Menu", command=self.show_slider_and_label)
         self.button.setScale(0.1)
