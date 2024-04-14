@@ -4,7 +4,7 @@ from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import NodePath
 from planet import Planet,PlanetAttributes
 from direct.gui.DirectEntry import DirectEntry
-from mlmodel import PERIOD
+from mlmodel import PERIOD, rewardFunc, simulate
 
 class Graphics:
     def __init__(self, base, solar_system, states):
@@ -29,6 +29,11 @@ class Graphics:
         self.label = DirectLabel(text="   Generation number: 000   ", pos=(-0.8, 0, 0.9), scale=0.06, parent=self.aspect2d)
         self.label.setTransparency(1)
         self.label.hide()
+
+        self.label2 = DirectLabel(text="score = 0.00000", pos=(0, 0, 0.9), scale=0.06, parent=self.aspect2d)
+        self.updateScoreLabel(states[0])
+        self.label2.setTransparency(1)
+        self.label2.hide()
 
         self.button2 = DirectButton(text = "Simulate", command = self.show_epoch)
         self.button2.setScale(0.07)
@@ -78,6 +83,7 @@ class Graphics:
         if self.slider.isHidden():
             self.slider.show()
             self.label.show()
+            self.label2.show()
             self.button2.show()
             self.button.hide()
             self.x_input.hide()
@@ -89,6 +95,7 @@ class Graphics:
         else:
             self.slider.hide()
             self.label.hide()
+            self.label2.hide()
             self.button2.hide()
             self.button.show()
             self.x_input.hide()
@@ -139,7 +146,11 @@ class Graphics:
         slider_value = round(self.slider['value'])
         planets = self.states[slider_value]
         self.solar_system.loadPlanets(planets)
+        self.updateScoreLabel(planets)
 
+    def updateScoreLabel(self, planets):
+        score =  rewardFunc(simulate(planets, PERIOD), len(planets))
+        self.label2['text'] = f"score = {round(score, 4)}"
 
     def show_add_planet_menu(self):
         if self.x_input.isHidden():
