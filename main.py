@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
-from mlmodel import RConserved
+#from mlmodel import RConserved
 
-from direct.showbase.ShowBase import ShowBase
+from direct.showbase.ShowBase import ShowBase, WindowProperties
 base = ShowBase()
 
 from panda3d.core import NodePath, PandaNode, TextNode, Vec3
@@ -16,21 +16,29 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 4
+NO_PLANETS = 12
 SPEED = 45
 
 
 class SolarSystem():
     def __init__(self):
         self.ready = False
+        self.createSky()
+
+    def createSky(self):
+        self.sky = loader.loadModel("models/solar_sky_sphere")
+        self.sky_tex = loader.loadTexture("models/stars.png")
+        self.sky.setTexture(self.sky_tex, 1)
+        self.sky.reparentTo(render)
+        self.sky.setScale(400)
 
     def loadPlanets(self, num_planets: int):
         self.planets = []
         self.deleted_trails = []
 
         sunattr = PlanetAttributes()
-        sunattr.mass = 100
-        sunattr.radius = 1.2
+        sunattr.mass = 500
+        sunattr.radius = 1
         sunattr.position=Vec3(0,0,0)
 
         sunattr.sun = True
@@ -39,11 +47,11 @@ class SolarSystem():
         for x in range(num_planets - 1):
             attr = PlanetAttributes()
             attr.mass = random.randint(1, 20) * 10
-            attr.radius = random.randint(1, 5)*0.1
+            attr.radius = random.randint(1, 5) * 0.05
             attr.position = [
-                random.randint(-10, 10),
-                random.randint(-10, 10),
-                random.randint(-10, 10)
+                random.randint(-20, 20),
+                random.randint(-20, 20),
+                random.randint(-20, 20)
                 ]
             attr.velocity = [
                 random.randint(-10, 10)*10E-7,
@@ -57,11 +65,15 @@ class SolarSystem():
 
         self.ready = True
 
-    def update(self):
+    def update(self, task):
         updateAllObjects(self.planets, time=SPEED)
-        for planet in self.planets:
-            planet.update()
+        for i in range(len(self.planets)-1, -1, -1):
+            planet = self.planets[i]
+            if planet.deleted:
+                self.planets.pop(i)
+                continue
 
+            planet.update()
 
 class World(DirectObject):
     def genLabelText(self, text, i):
@@ -73,16 +85,11 @@ class World(DirectObject):
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
         #base.disableMouse()
-        camera.setPos(0, 0, 45)
+        camera.setPos(0, 45, 45)
         camera.setHpr(0, -90, 0)
 
         self.solar_system = SolarSystem()
         self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
-
-        self.title = OnscreenText(
-            text="Panda3D: Tutorial 3 - Events",
-            parent=base.a2dBottomRight, align=TextNode.A_right,
-            style=1, fg=(1, 1, 1, 1), pos=(-0.1, 0.1), scale=.07)
 
         self.accept("escape", sys.exit)
         self.accept("mouse1", self.handleMouseClick)
@@ -99,11 +106,7 @@ class World(DirectObject):
                           self.orbit_period_moon)
 
     def update(self, task):
-        self.solar_system.update()
-        print(RConserved(self.solar_system.planets))
-        self.update_counter += 1
-        if self.update_counter % 100 == 0:
-            print(f"{self.update_counter} updates")
+        self.solar_system.update(task)
         return task.cont
 
 #########################################################################
@@ -113,13 +116,19 @@ class World(DirectObject):
 
 
 if __name__ == "__main__":
+    wp = WindowProperties()
+    wp.setFullscreen(1)
+    wp.setSize(1280, 720)
+    base.openMainWindow()
+    base.win.requestProperties(wp)
+
     task_manager = TaskManager()
     task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
-    w = World(task_manager)
-    g = Graphics(base) 
 
+    w = World(task_manager)
+    g = Graphics(base)
 
     base.run()
 

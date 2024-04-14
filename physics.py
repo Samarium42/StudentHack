@@ -84,7 +84,6 @@ def modelCollisions(Objects, Index1, Index2):
      ]
 
     o2.delete()
-    Objects.pop(Index2)
     return Objects
 
 
@@ -117,12 +116,23 @@ def modelCollisionsBouncing(Objects, Index1, Index2):
 
     return Objects
 
-def updateAllObjects (Objects, size=500, time=1):
-    for i in range(len(Objects) - 1, -1, -1):
-        if i == 0:
-            continue
+def shiftToCentre(Objects, largest):
+    center = largest.attributes.position
+    for obj in Objects:
+        for i in range(3):
+            obj.attributes.position[i] -= largest.attributes.position[i]
+    return Objects
 
+
+def updateAllObjects (Objects, size=500, time=1):
+    largest = None
+    for i in range(len(Objects) - 1, -1, -1):
+        ob = Objects[i]
         updatePosition(Objects, i, time)
+
+        if largest is None or largest.attributes.mass < ob.attributes.mass:
+            largest = ob
+
         """
         ADD CHECK THAT OBJECTS ARE NOT OUT OF BOUNDS SUCH AS BELOW
         """
@@ -138,4 +148,5 @@ def updateAllObjects (Objects, size=500, time=1):
         for j in range(len(Objects) -1, i, -1):
             if (math.sqrt((Objects[i].attributes.position[0] - Objects[j].attributes.position[0])**2 + (Objects[i].attributes.position[1] - Objects[j].attributes.position[1])**2 + (Objects[i].attributes.position[2] - Objects[j].attributes.position[2])**2) < Objects[i].attributes.radius + Objects[j].attributes.radius):
                 modelCollisions(Objects, i, j)
-    return Objects
+
+    return shiftToCentre(Objects, largest)

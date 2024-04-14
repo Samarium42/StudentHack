@@ -4,7 +4,7 @@ from direct.motiontrail.MotionTrail import MotionTrail
 import math
 
 trail_thickness = 0.4
-trail_lag = 8
+trail_lag = 4
 sun_texture = "models/sun_1k_tex.jpg"
 planet_textures = [
         "models/deimos_1k_tex.jpg",
@@ -88,7 +88,9 @@ class Planet3D(Planet):
 
     def delete(self):
         self.model.removeNode()
-        #self.motion_trail.reset_motion_trail();
-        #self.motion_trail.reset_motion_trail_geometry();
-        self.motion_trail.reparentTo(self.world)
+        self.motion_trail.unregister_motion_trail()
+        self.motion_trail.reset_motion_trail();
+        self.motion_trail.reset_motion_trail_geometry();
+        #self.motion_trail.reparentTo(self.world)
+
         self.deleted = True
