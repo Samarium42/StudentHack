@@ -4,6 +4,11 @@ import physics as phys
 import random
 from planet import Planet
 
+saved_states = []
+
+def get_saved_states():
+    return saved_states
+
 
 def planet_to_array(planet: Planet):
     p = []
@@ -59,8 +64,14 @@ def RConserved(planets: list) -> float:
 
 # Given the states of planets and a simulation period, p, updates the states of the system p times and returns the final state
 def simulate (planets: list, period: int) -> list:
-    for _ in range(period):
+    step_size = period // 3
+
+    for i in range(period):
         planets = phys.updateAllObjects(planets)
+
+        if i % step_size == 0 and i != 0:
+            saved_states.append(planets)
+
     return planets
 
 
@@ -71,9 +82,9 @@ def populate(p: int, n: int): # p is the number of states, n is the number of pl
         for _ in range(n):
             q = Planet()
             q.attributes.mass = random.randint(1,10)
-            q.attributes.radius = random.uniform(1, 10)
-            q.attributes.position = [random.randint(-20,20), random.randint(-20,20), random.randint(-20,20)]
-            q.attributes.velocity = [random.randint(0,10)*10E-7, random.randint(0,10)*10E-7, random.randint(0,10)*10E-7]
+            q.attributes.radius = random.uniform(1, 5)*0.07
+            q.attributes.position = [random.randint(-10,10), random.randint(-10,10), random.randint(-10,10)]
+            q.attributes.velocity = [random.randint(0,10)*5E-6, random.randint(0,10)*5E-6, random.randint(0,10)*5E-6]
             state.append(q)
         population.append(state)
 
@@ -86,7 +97,7 @@ def evolve(pop: list, t: int):
         t = len(pop)
 
     # Make key,pair of state and r score
-    scores = [(state, rewardFunc(simulate(state, 1), len(state))) for state in pop]
+    scores = [(state, rewardFunc(simulate(state, 10), len(state))) for state in pop]
     # sort by score
     scores.sort(key=lambda x: x[1], reverse=True)
 
@@ -119,18 +130,36 @@ def evolve(pop: list, t: int):
 
     return parents + children
 
-pop = populate(10, 5)
-for s in pop:
-    print("SYSTEM:")
-    print(RConserved(s))
-    for p in s:
-        print("\t", planet_to_array(p))
 
+def genetic(pop_size, no_planets, evolutions, harshness):
+    pop = populate(pop_size, no_planets)
 
-for _ in range(1):
-    pop = evolve(pop, 4)
+    for _ in range(evolutions):
+        pop = evolve(pop, harshness)
 
-print ("\n\n\n\n")
+    return saved_states
 
-for s in pop:
-        print(RConserved(s))
+# pop = populate(10, 5)
+# for s in pop:
+#     print("SYSTEM:")
+#     start += RConserved(s)
+#     for p in s:
+#         print("\t", planet_to_array(p))
+#
+#
+# for _ in range(5):
+#     pop = evolve(pop, 2)
+#
+# print ("\n\n\n\n")
+#
+# print(saved_states)
+#
+# end=0
+# for s in pop:
+#     end+= RConserved(s)
+#     print(RConserved(s))
+#
+#
+# print(f"Average start value: {start / 10}")
+# print(f"Average end value:   {end / 10}")
+# print(f"Percentage improvement: {(start - end)/start * 100}")

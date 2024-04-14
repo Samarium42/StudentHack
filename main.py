@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from mlmodel import planet_to_array, populate
 from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
 #from mlmodel import RConserved
@@ -44,7 +45,8 @@ class SolarSystem():
         render.setLight(alnp)
         render.setShaderAuto()
 
-    def loadPlanets(self, num_planets: int):
+
+    def loadPlanets(self, planets: list):
         self.planets = []
         self.deleted_trails = []
 
@@ -52,33 +54,45 @@ class SolarSystem():
         sunattr.mass = 500 
         sunattr.radius = 1
         sunattr.position=Vec3(0,0,0)
+        sunattr.velocity = Vec3(1E-7,1E-7,10E-7)
 
         sunattr.sun = True
         sun = Planet3D(render, sunattr, "Sun")
         self.planets.append(sun)
-        for x in range(num_planets - 1):
-            attr = PlanetAttributes()
-            attr.mass = random.randint(1, 20) * 10
-            attr.radius = random.randint(1, 5) * 0.05
-            attr.position = [
-                random.randint(-20, 20),
-                random.randint(-20, 20),
-                random.randint(-20, 20)
-                ]
-            attr.velocity = [
-                random.randint(-10, 10)*10E-7,
-                random.randint(-10, 10)*10E-7,
-                random.randint(-10, 10)*10E-7
-                ]
-            attr.texture = random.random()
 
-            planet = Planet3D(render, attr, f"Planet{x}")
+        for p in planets:
+            attr = p.attributes
+            attr.texture = random.random()
+            planet = Planet3D(render, p.attributes, "")
             self.planets.append(planet)
 
+        # for x in range(num_planets - 1):
+        #     attr = PlanetAttributes()
+        #     attr.mass = random.randint(1, 20) * 10
+        #     attr.radius = random.randint(1, 5) * 0.05
+        #     attr.position = [
+        #         random.randint(-20, 20),
+        #         random.randint(-20, 20),
+        #         random.randint(-20, 20)
+        #         ]
+        #     attr.velocity = [
+        #         random.randint(-10, 10)*10E-7,
+        #         random.randint(-10, 10)*10E-7,
+        #         random.randint(-10, 10)*10E-7
+        #         ]
+        #     attr.texture = random.random()
+        #
+        #     planet = Planet3D(render, attr, f"Planet{x}")
+        #     self.planets.append(planet)
+        #
         self.ready = True
 
     def update(self, task):
         dt = globalClock.getDt()
+        time = int(globalClock.getFrameTime())
+        if time % 5 == 0:
+           print("")
+
         updateAllObjects(self.planets, time=dt*SPEED)
         for i in range(len(self.planets)-1, -1, -1):
             planet = self.planets[i]
@@ -93,7 +107,7 @@ class World(DirectObject):
         return OnscreenText(text=text, pos=(0.06, -.06 * (i + 0.5)), fg=(1, 1, 1, 1),
                             parent=base.a2dTopLeft,align=TextNode.ALeft, scale=.05)
 
-    def __init__(self, task_manager):
+    def __init__(self, task_manager, planets):
         self.update_counter = 0
         # The standard camera position and background initialization
         base.setBackgroundColor(0, 0, 0)
@@ -102,7 +116,7 @@ class World(DirectObject):
         camera.setHpr(0, -90, 0)
 
         self.solar_system = SolarSystem()
-        self.solar_system.loadPlanets(NO_PLANETS)  # Load, texture, and position the planets
+        self.solar_system.loadPlanets(planets)  # Load, texture, and position the planets
 
         self.accept("escape", sys.exit)
         self.accept("mouse1", self.handleMouseClick)
@@ -130,6 +144,10 @@ class World(DirectObject):
 
 if __name__ == "__main__":
 
+    pop = populate(10, 10)
+    planets = pop[0]
+    for p in planets:
+        print(planet_to_array(p))
 
     wp = WindowProperties()
     wp.setFullscreen(1)
@@ -145,7 +163,7 @@ if __name__ == "__main__":
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
 
-    w = World(task_manager)
+    w = World(task_manager, planets)
     g = Graphics(base)
 
     base.run()
