@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 from planet import Planet3D, PlanetAttributes
 from graphics import Graphics
-from mlmodel import RConserved
+#from mlmodel import RConserved
 
-from direct.showbase.ShowBase import ShowBase
+from direct.showbase.ShowBase import ShowBase, WindowProperties
 base = ShowBase()
 
 from panda3d.core import NodePath, PandaNode, TextNode, Vec3
@@ -16,7 +16,7 @@ import sys
 from physics import updateAllObjects
 import random
 
-NO_PLANETS = 4
+NO_PLANETS = 6
 SPEED = 45
 
 
@@ -57,11 +57,15 @@ class SolarSystem():
 
         self.ready = True
 
-    def update(self):
+    def update(self, task):
         updateAllObjects(self.planets, time=SPEED)
-        for planet in self.planets:
-            planet.update()
+        for i in range(len(self.planets)-1, -1, -1):
+            planet = self.planets[i]
+            if planet.deleted:
+                self.planets.pop(i)
+                continue
 
+            planet.update()
 
 class World(DirectObject):
     def genLabelText(self, text, i):
@@ -98,8 +102,8 @@ class World(DirectObject):
                           self.orbit_period_moon)
 
     def update(self, task):
-        self.solar_system.update()
-        print(RConserved(self.solar_system.planets))
+        self.solar_system.update(task)
+        #print(RConserved(self.solar_system.planets))
         return task.cont
 
 #########################################################################
@@ -109,13 +113,19 @@ class World(DirectObject):
 
 
 if __name__ == "__main__":
+    wp = WindowProperties()
+    wp.setFullscreen(1)
+    wp.setSize(1280, 720)
+    base.openMainWindow()
+    base.win.requestProperties(wp)
+
     task_manager = TaskManager()
     task_manager.setupTaskChain("taskChain", numThreads = 1, tickClock = True,
                            frameBudget = -1,
                            frameSync = True, timeslicePriority = False)
-    w = World(task_manager)
-    g = Graphics(base) 
 
+    w = World(task_manager)
+    g = Graphics(base)
 
     base.run()
 

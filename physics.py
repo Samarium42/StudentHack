@@ -84,7 +84,6 @@ def modelCollisions(Objects, Index1, Index2):
      ]
 
     o2.delete()
-    Objects.pop(Index2)
     return Objects
 
 

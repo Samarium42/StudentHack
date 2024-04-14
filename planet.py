@@ -86,7 +86,9 @@ class Planet3D(Planet):
 
     def delete(self):
         self.model.removeNode()
-        #self.motion_trail.reset_motion_trail();
-        #self.motion_trail.reset_motion_trail_geometry();
-        self.motion_trail.reparentTo(self.world)
+        self.motion_trail.unregister_motion_trail()
+        self.motion_trail.reset_motion_trail();
+        self.motion_trail.reset_motion_trail_geometry();
+        #self.motion_trail.reparentTo(self.world)
+
         self.deleted = True
