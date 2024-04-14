@@ -13,16 +13,15 @@ class PlanetAttributes:
     position = [0, 0, 0]
     velocity = [0, 0, 0]
 
+
 class Planet():
-    def __init__(self, attributes: PlanetAttributes):
-        self.attributes = attributes
-    def delete(self):
-        pass
+    def __init__(self):
+        self.attributes = PlanetAttributes()
 
 
 class Planet3D(Planet):
     def __init__(self, world, attributes: PlanetAttributes, name):
-        Planet.__init__(self, attributes)
+        self.attributes = attributes
 
         self.world = world
         self.deleted = False
@@ -54,7 +53,6 @@ class Planet3D(Planet):
         self.motion_trail.time_window = trail_lag
         self.motion_trail.update_vertices()
 
-    
 
     def update(self):
         if self.deleted:

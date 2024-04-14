@@ -2,19 +2,19 @@ import numpy as np
 import pandas as pd
 import physics as phys
 import random
-from planet import Planet, PlanetAttributes
+from planet import Planet
 
 
-def planet_to_array(planet: PlanetAttributes):
+def planet_to_array(planet: Planet):
     p = []
-    p.append(planet.mass)
-    p.append(planet.radius)
-    p.append(planet.position)
-    p.append(planet.velocity)
+    p.append(planet.attributes.mass)
+    p.append(planet.attributes.radius)
+    p.append(planet.attributes.position)
+    p.append(planet.attributes.velocity)
     return p
 
 
-def rewardFunc (planets: list, original_num: int) -> float:
+def rewardFunc(planets: list, original_num: int) -> float:
     # Objects is a list of objects. Each object has properties: mass, radius, position, velocity
     # Position and Velocity are 3D vectors: [x,y,z]
     w1,w2 = 1,1
@@ -33,15 +33,15 @@ def RNumPlanets(planets: list, original_num: int) -> float:
     print("We are in RNumPlanets", ans)
     return ans
 
-def RConserved(objects):
+def RConserved(planets: list) -> float:
     # The smaller the sum the better (conservation of energy) - Centripetal and Gravitational Forces are in Equilibrium
     # Returns a score of 1 if the sum is the best (energy all conserved), 0 if the sum is the worst (energy lost none conserved)
     sum = 0
-    for object in objects:
-        for object2 in objects:
-            if object == object2:
+    for p in planets:
+        for q in planets:
+            if p == q:
                 continue
-            sum += abs((phys.GRAVITATIONAL_CONSTANT * object2.mass)/np.linalg.norm(object2.position - object.position) - (object2.velocity)**2)
+            sum += abs((phys.GRAVITATIONAL_CONSTANT * q.mass)/np.linalg.norm(q.position - p.position) - (q.velocity)**2)
         if sum == 0:
             return 1
         else:
@@ -59,21 +59,20 @@ def populate(p: int, n: int): # p is the number of states, n is the number of pl
     for _ in range(p):
         state = [] 
         for _ in range(n):
-            planet = PlanetAttributes
-            planet.mass = random.randint(1,10)
-            planet.radius = random.uniform(1, 10)
-            planet.position = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
-            planet.velocity = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
-            state.append(planet)
+            q = Planet()
+            q.attributes.mass = random.randint(1,10)
+            q.attributes.radius = random.uniform(1, 10)
+            q.attributes.position = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
+            q.attributes.velocity = [random.randint(0,10), random.randint(0,10), random.randint(0,10)]
+            state.append(q)
         population.append(state)
 
     return population
 
+pop = populate(5,5)
 
-
-
-population = populate(10,3)
-state = population[0]
-updated_state = simulate(state, 500)
-print("Population:" , population)
-print("Reward:" , rewardFunc(population[0], 3))
+for i in pop:
+    print("Solar system:")
+    for p in i:
+        print(planet_to_array(p))
+    print("\n\n\n")
